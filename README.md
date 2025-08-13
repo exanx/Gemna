@@ -37,7 +37,7 @@ It's designed to be your personal chat interface, allowing you to create unique 
     *   **Image Generation & TTS:** Generate images directly in chat and have messages read aloud using Gemini's text-to-speech capabilities.
 
 *   **🔒 Privacy-First Architecture:**
-    *   **Client-Side E2EE:** All chat messages and persona descriptions are encrypted **on your device** using AES before being sent to the cloud. The encryption key is also generated on your device and never leaves your control.
+    *   **Client-Side E2EE:** All chat messages are encrypted **on your device** using AES before being sent to the cloud (however, persona descriptions aren't being encrypted currently). The encryption key is also generated on your device and never leaves your control.
     *   **Local-First by Default:** The app works perfectly without an account, storing all data securely in your browser's local storage.
     *   **Optional Cloud Sync:** Sign in (Anonymously or with Google) to securely sync your encrypted data across devices using Firebase. **We never see your unencrypted conversations.**
 
