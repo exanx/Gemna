@@ -241,7 +241,7 @@
                 </div>
                 <div class="flex items-center gap-2 relative">
                      <button id="clear-local-chats-header-button" title="Clear Local Chat" class="p-2 rounded-full hover-theme">
-                        <svg data-lucide="brush" class="icon-theme h-5 w-5"></svg>
+                        <svg data-lucide="brush-cleaning" class="icon-theme h-5 w-5"></svg>
                     </button>
                      <button id="clear-chat-button" title="Clear All Chat History" class="p-2 rounded-full hover-theme">
                         <svg data-lucide="trash-2" class="icon-theme h-5 w-5"></svg>
@@ -411,8 +411,11 @@
                         <div class="mb-4">
                             <label for="model-select" class="block text-sm font-medium mb-1 text-theme">Gemini Model</label>
                             <select id="model-select">
-                                <option value="gemini-1.5-flash-latest">Gemini 1.5 Flash (Default)</option>
-                                <option value="gemini-1.5-pro-latest">Gemini 1.5 Pro</option>
+                                <option value="gemini-2.5-flash">Gemini 2.5 Flash (Default)</option>
+                                <option value="gemini-2.5-pro">Gemini 2.5 Pro</option>
+                                <option value="gemini-2.5-flash-lite">Gemini 2.5 Flash Lite</option>
+                                <option value="gemini-2.0-flash">Gemini 2.0 Flash</option>
+                                <option value="gemini-2.0-flash-lite">Gemini 2.0 Flash Lite</option>
                             </select>
                         </div>
                         <div class="flex justify-between items-center mb-1">
@@ -429,16 +432,17 @@
                         <div class="mb-4">
                              <label for="groq-model-select" class="block text-sm font-medium mb-1 text-theme">Groq Model</label>
                             <select id="groq-model-select">
-                                <option value="llama3-70b-8192">Llama3 70b</option>
-                                <option value="llama3-8b-8192">Llama3 8b</option>
-                                <option value="gemma-7b-it">Gemma 7b</option>
-                                <option value="mixtral-8x7b-32768">Mixtral 8x7b</option>
+                                <option value="llama-3.3-70b-versatile">Llama 3.3 70B</option>
+                                <option value="llama-3.1-8b-instant">Llama 3.1 8B</option>
+                                <option value="gemma2-9b-it">Gemma2 9B</option>
+                                <option value="deepseek-r1-distill-llama-70b">DeepSeek-R1-Distill-Llama-70B</option>
+                                <option value="moonshotai/kimi-k2-instruct">Kimi K2 Instruct</option>
                                 <option value="custom">Custom Model...</option>
                             </select>
                         </div>
                         <div id="groq-custom-model-wrapper" class="hidden mb-4">
                             <label for="groq-custom-model-input" class="block text-sm font-medium mb-1 text-theme">Custom Groq Model</label>
-                            <input type="text" id="groq-custom-model-input" class="w-full p-2 border border-theme rounded-md bg-input text-input" placeholder="e.g., gemma2-9b-it">
+                            <input type="text" id="groq-custom-model-input" class="w-full p-2 border border-theme rounded-md bg-input text-input" placeholder="e.g., mixtral-8x7b-32768">
                         </div>
                         <label for="groq-api-key-input" class="block text-sm font-medium mb-1 text-theme">Groq API Key</label>
                         <input type="password" id="groq-api-key-input" class="w-full p-2 border border-theme rounded-md bg-input text-input" placeholder="gsk_...">
@@ -450,18 +454,17 @@
                         <div class="mb-4">
                             <label for="openrouter-model-select" class="block text-sm font-medium mb-1 text-theme">OpenRouter Model</label>
                             <select id="openrouter-model-select">
-                                <option value="google/gemini-flash-1.5">Google: Gemini 1.5 Flash</option>
-                                <option value="google/gemini-pro-1.5">Google: Gemini 1.5 Pro</option>
-                                <option value="anthropic/claude-3-haiku">Anthropic: Claude 3 Haiku</option>
-                                <option value="openai/gpt-4o">OpenAI: GPT-4o</option>
-                                <option value="meta-llama/llama-3-70b-instruct">Meta: Llama 3 70B</option>
-                                <option value="mistralai/mistral-large">Mistral: Large</option>
+                                <option value="cognitivecomputations/dolphin-mistral-24b-venice-edition:free">Venice Uncensored 24B</option>
+                                <option value="z-ai/glm-4.5-air:free">GLM-4.5 Air</option>
+                                <option value="tencent/hunyuan-a13b-instruct:free">Hunyuan A13B</option>
+                                <option value="sarvamai/sarvam-m:free">Sarvam-M</option>
+                                <option value="qwen/qwen3-235b-a22b:free">Qwen3 235B</option>
                                 <option value="custom">Custom Model...</option>
                             </select>
                         </div>
                          <div id="openrouter-custom-model-wrapper" class="hidden mb-4">
                             <label for="openrouter-custom-model-input" class="block text-sm font-medium mb-1 text-theme">Custom OpenRouter Model</label>
-                            <input type="text" id="openrouter-custom-model-input" class="w-full p-2 border border-theme rounded-md bg-input text-input" placeholder="e.g., cognitivecomputations/dolphin-mixtral-8x7b">
+                            <input type="text" id="openrouter-custom-model-input" class="w-full p-2 border border-theme rounded-md bg-input text-input" placeholder="e.g., openai/gpt-4o">
                         </div>
                         <label for="openrouter-api-key-input" class="block text-sm font-medium mb-1 text-theme">OpenRouter API Key</label>
                         <input type="password" id="openrouter-api-key-input" class="w-full p-2 border border-theme rounded-md bg-input text-input" placeholder="sk-or-...">
@@ -1281,12 +1284,12 @@
                 darkMode: true, theme: 'theme-imessage', activeChatId: 'gemna-bot-main',
                 apiProvider: 'gemini',
                 apiKeys: [{ key: '', count: 0 }],
-                selectedModel: 'gemini-1.5-flash-latest',
+                selectedModel: 'gemini-2.5-flash',
                 groqApiKey: '',
-                selectedGroqModel: 'llama3-70b-8192',
+                selectedGroqModel: 'llama-3.3-70b-versatile',
                 customGroqModel: '',
                 openRouterApiKey: '',
-                selectedOpenRouterModel: 'google/gemini-flash-1.5',
+                selectedOpenRouterModel: 'cognitivecomputations/dolphin-mistral-24b-venice-edition:free',
                 customOpenRouterModel: '',
                 nsfwAllowed: false, userName: 'User', userAvatar: '',
                 showAvatars: false, showTimestamps: true, timeSource: 'device', characterTimes: {},
@@ -1329,17 +1332,17 @@
             apiProviderSelect.value = settings.apiProvider || 'gemini';
 
             // Gemini
-            modelSelect.value = settings.selectedModel || 'gemini-1.5-flash-latest';
+            modelSelect.value = settings.selectedModel || 'gemini-2.5-flash';
             geminiApiKeyInput.value = (settings.apiKeys && settings.apiKeys[0]?.key) || '';
 
             // Groq
-            groqModelSelect.value = settings.selectedGroqModel || 'llama3-70b-8192';
+            groqModelSelect.value = settings.selectedGroqModel || 'llama-3.3-70b-versatile';
             groqApiKeyInput.value = settings.groqApiKey || '';
             groqCustomModelInput.value = settings.customGroqModel || '';
             groqCustomModelWrapper.classList.toggle('hidden', groqModelSelect.value !== 'custom');
             
             // OpenRouter
-            openrouterModelSelect.value = settings.selectedOpenRouterModel || 'google/gemini-flash-1.5';
+            openrouterModelSelect.value = settings.selectedOpenRouterModel || 'cognitivecomputations/dolphin-mistral-24b-venice-edition:free';
             openrouterApiKeyInput.value = settings.openRouterApiKey || '';
             openrouterCustomModelInput.value = settings.customOpenRouterModel || '';
             openrouterCustomModelWrapper.classList.toggle('hidden', openrouterModelSelect.value !== 'custom');
@@ -2174,7 +2177,7 @@
                 throw new Error("No valid Gemini API key found.");
             }
 
-            const selectedModel = model || settings.selectedModel || 'gemini-1.5-flash-latest';
+            const selectedModel = model || settings.selectedModel || 'gemini-2.5-flash';
             
             const apiVersion = 'v1beta';
             const apiUrl = `https://generativelanguage.googleapis.com/${apiVersion}/models/${selectedModel}:generateContent?key=${apiKeyInfo.key}`;
@@ -2242,28 +2245,16 @@
             const chosenVoice = character?.voice || 'Zephyr';
             
             const payload = {
-                text: textToSpeak,
-                model: "gemini-1.5-flash-latest",
-                voice: chosenVoice,
-                audio_format: "wav_16khz_16bit"
+                contents: [{ parts: [{ text: textToSpeak }] }],
+                generationConfig: { responseModalities: ["AUDIO"], speechConfig: { voiceConfig: { prebuiltVoiceConfig: { voiceName: chosenVoice }}}},
+                model: "gemini-2.5-flash-preview-tts"
             };
-
-            const ttsApiUrl = 'https://texttospeech.googleapis.com/v1beta1/text:synthesize?key=' + settings.apiKeys[0].key;
-
+            
             try {
-                const response = await fetch(ttsApiUrl, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        input: { text: textToSpeak },
-                        voice: { name: chosenVoice, languageCode: 'en-US' },
-                        audioConfig: { audioEncoding: 'LINEAR16', sampleRateHertz: 24000 }
-                    })
-                });
-                if (!response.ok) throw new Error(`TTS API error: ${response.statusText}`);
-                const data = await response.json();
-                if (data.audioContent) {
-                     return { audioData: data.audioContent, sampleRate: 24000 };
+                const result = await callGeminiAPI(payload, 'gemini-2.5-flash-preview-tts');
+                const part = result?.candidates?.[0]?.content?.parts?.[0];
+                if (part?.inlineData?.data) {
+                    return { audioData: part.inlineData.data, mimeType: part.inlineData.mimeType };
                 }
                 throw new Error("Invalid or missing audio data in API response.");
             } catch(error) {
@@ -2272,14 +2263,20 @@
             }
         }
 
-
         async function playAudioMessage(text, buttonElement, character) {
             buttonElement.disabled = true;
             buttonElement.innerHTML = `<svg class="animate-spin h-4 w-4 icon-theme" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>`;
 
             try {
-                const { audioData, sampleRate } = await callGeminiTTSAPI(text, character);
+                if (!settings.apiKeys[0]?.key) {
+                    throw new Error("A Gemini API key is required for Text-to-Speech.");
+                }
+                const { audioData, mimeType } = await callGeminiTTSAPI(text, character);
                 
+                const sampleRateMatch = mimeType.match(/rate=(\d+)/);
+                if (!sampleRateMatch) throw new Error("Could not determine sample rate.");
+                
+                const sampleRate = parseInt(sampleRateMatch[1], 10);
                 const pcmBuffer = base64ToArrayBuffer(audioData);
                 const pcm16 = new Int16Array(pcmBuffer);
                 const wavBlob = pcmToWav(pcm16, sampleRate);
@@ -2379,7 +2376,7 @@
                         }
                     }).filter(Boolean);
                     
-                    return { role: turn.role === 'model' ? 'model' : 'user', parts: apiParts };
+                    return { role: turn.role, parts: apiParts };
                 });
 
             if (settings.apiProvider === 'groq' || settings.apiProvider === 'openrouter') {
@@ -2396,9 +2393,15 @@
                     messages: [ { role: 'system', content: personaInstructionText }, ...messages ]
                  };
             } else {
+                const personaInstruction = { role: 'user', parts: [{ text: `System instruction: ${personaInstructionText}` }] };
+                const modelInstruction = { role: 'model', parts: [{ text: 'Understood. I will adopt that persona and follow all instructions.' }] };
+
                 return {
-                    contents: historyForApi,
-                    systemInstruction: { parts: [{ text: personaInstructionText }] }
+                    contents: [
+                        personaInstruction,
+                        modelInstruction,
+                        ...historyForApi
+                    ]
                 };
             }
         }
@@ -2511,13 +2514,12 @@ Based on all this information, create a single, descriptive prompt for an image 
                 const descriptionResult = await callGeminiAPI(descriptionPayload);
                 const imagePrompt = descriptionResult.candidates[0].content.parts[0].text.trim();
                 
-                // Use a dedicated image generation model
                 const imagePayload = {
-                    contents: [{ parts: [{ text: imagePrompt }] }]
+                    contents: [{ parts: [{ text: imagePrompt }] }],
+                    generationConfig: { responseModalities: ['TEXT', 'IMAGE'] }
                 };
                 
-                const imageResult = await callGeminiAPI(imagePayload, 'gemini-1.5-flash-latest'); // Or a dedicated image model if available through this endpoint.
-
+                const imageResult = await callGeminiAPI(imagePayload, 'gemini-1.5-flash'); // Use a capable model
                 const imagePart = imageResult.candidates?.[0]?.content?.parts?.find(p => p.inlineData);
 
                 if (imagePart) {
