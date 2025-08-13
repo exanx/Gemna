@@ -1,0 +1,3153 @@
+<!DOCTYPE html>
+<html lang="en" data-mode="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Gemna Chat</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.2.0/crypto-js.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* --- Base & Default Theme --- */
+        :root {
+            --bg-color: #ffffff; --text-color: #1f2937; --header-bg: #f9fafb; --header-text: #1f2937;
+            --user-bubble-bg: #3b82f6; --user-bubble-text: #ffffff; --ai-bubble-bg: #e5e7eb; --ai-bubble-text: #1f2937;
+            --input-bg: #f3f4f6; --input-text: #1f2937; --border-color: #e5e7eb; --button-bg: #3b82f6; --button-text: #ffffff;
+            --icon-color: #6b7280; --font-family: 'Inter', sans-serif; --sidebar-bg: #f9fafb; --sidebar-border: #e5e7eb;
+            --hover-bg: rgba(0, 0, 0, 0.05);
+            --active-char-bg: rgba(0, 0, 0, 0.07);
+            --code-bg: #f3f4f6;
+            --system-bubble-bg: #a1a1aa; --system-bubble-text: #ffffff;
+            --scrollbar-thumb-color: #d1d5db;
+        }
+        html[data-mode="dark"] {
+            --bg-color: #111827; --text-color: #e5e7eb; --header-bg: #1f2937; --header-text: #e5e7eb;
+            --user-bubble-bg: #3b82f6; --ai-bubble-bg: #374151; --ai-bubble-text: #e5e7eb;
+            --input-bg: #1f2937; --input-text: #e5e7eb; --border-color: #374151; --icon-color: #9ca3af;
+            --sidebar-bg: #1f2937; --sidebar-border: #374151; --hover-bg: rgba(255, 255, 255, 0.05);
+            --active-char-bg: rgba(255, 255, 255, 0.1);
+            --code-bg: #1f2937;
+            --system-bubble-bg: #52525b; --system-bubble-text: #e5e7eb;
+            --scrollbar-thumb-color: #4b5563;
+        }
+        body { font-family: var(--font-family); background-color: var(--bg-color); color: var(--text-color); transition: background-color 0.3s, color 0.3s; }
+        .bg-theme { background-color: var(--bg-color); }
+        .text-theme { color: var(--text-color); }
+        .bg-header { background-color: var(--header-bg); }
+        .text-header { color: var(--header-text); }
+        .border-theme { border-color: var(--border-color); }
+        .user-bubble { background: var(--user-bubble-bg); color: var(--user-bubble-text); }
+        .ai-bubble { background: var(--ai-bubble-bg); color: var(--ai-bubble-text); }
+        .system-bubble { background-color: var(--system-bubble-bg); color: var(--system-bubble-text); }
+        .bg-input { background-color: var(--input-bg); }
+        .text-input { color: var(--input-text); }
+        .bg-button { background-color: var(--button-bg); }
+        .text-button { color: var(--button-text); }
+        .icon-theme { color: var(--icon-color); }
+        .bg-sidebar { background-color: var(--sidebar-bg); }
+        .border-sidebar { border-color: var(--sidebar-border); }
+        .hover-theme:hover { background-color: var(--hover-bg); }
+        .character-item.active { background-color: var(--active-char-bg); }
+
+        /* --- Theme-Specific Styling --- */
+        .theme-icon { display: none; }
+        body[data-theme="theme-imessage"] .icon-imessage,
+        body[data-theme="theme-whatsapp"] .icon-whatsapp,
+        body[data-theme="theme-messenger"] .icon-messenger,
+        body[data-theme="theme-instagram"] .icon-instagram,
+        body[data-theme="theme-twitter"] .icon-twitter { display: inline-flex; }
+        #message-input-wrapper { border-radius: 9999px; }
+
+        /* iMessage */
+        body[data-theme="theme-imessage"] { --user-bubble-bg: #007aff; --ai-bubble-bg: #e5e5ea; --ai-bubble-text: #000; --button-bg: #007aff; --input-bg: #ffffff; --border-color: #dcdcdc; --sidebar-bg: #f2f2f7;}
+        html[data-mode="dark"] body[data-theme="theme-imessage"] { --bg-color: #000000; --header-bg: #1c1c1e; --user-bubble-bg: #0b84ff; --ai-bubble-bg: #2c2c2e; --ai-bubble-text: #ffffff; --input-bg: #2c2c2e; --border-color: #2c2c2e; --sidebar-bg: #1c1c1e;}
+        body[data-theme="theme-imessage"] #message-input-wrapper { border-radius: 0.75rem; }
+
+        /* WhatsApp */
+        body[data-theme="theme-whatsapp"] {
+            --font-family: 'Roboto', sans-serif; --bg-color: #E5DDD5; --header-bg: #075E54; --header-text: #fff; --icon-color: #fff;
+            --user-bubble-bg: #DCF8C6; --user-bubble-text: #000; --ai-bubble-bg: #fff; --ai-bubble-text: #000;
+            --button-bg: #128C7E; --sidebar-bg: #fff; --input-bg: #fff;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="400" height="400" viewBox="0 0 800 800"><g fill="%23a2a5a5" fill-opacity="0.08"><path d="M400 0L0 400h400zM800 400L400 800V400z"/></g></svg>');
+        }
+        html[data-mode="light"] body[data-theme="theme-whatsapp"] #sidebar .icon-theme { color: #54656f; }
+        html[data-mode="dark"] body[data-theme="theme-whatsapp"] {
+            --bg-color: #0b141a; --header-bg: #202c33; --header-text: #e7e9ea; --icon-color: #aebac1;
+            --user-bubble-bg: #005c4b; --user-bubble-text: #fff; --ai-bubble-bg: #202c33; --ai-bubble-text: #e7e9ea;
+            --button-bg: #00a884; --sidebar-bg: #111b21; --input-bg: #202c33;
+            background-image: none;
+        }
+
+        /* Messenger */
+        body[data-theme="theme-messenger"] { --user-bubble-bg: linear-gradient(to top right, #00c6ff, #0072ff); --ai-bubble-bg: #e4e6eb; --ai-bubble-text: #050505; --button-bg: #0084ff; --icon-color: #ffffff; --sidebar-bg: #fff; --input-bg: #f0f2f5;}
+        html[data-mode="dark"] body[data-theme="theme-messenger"] { --bg-color: #18191a; --header-bg: #242526; --user-bubble-bg: linear-gradient(to top right, #00c6ff, #0072ff); --ai-bubble-bg: #3a3b3c; --ai-bubble-text: #e4e6eb; --sidebar-bg: #242526; --input-bg: #3a3b3c; --border-color: #3a3b3c;}
+
+        /* Instagram */
+        body[data-theme="theme-instagram"] { --user-bubble-bg: #efefef; --user-bubble-text: #000; --ai-bubble-bg: linear-gradient(to right, #833ab4, #fd1d1d, #fcb045); --ai-bubble-text: #fff; --sidebar-bg: #fff; --input-bg: #fff; --border-color: #dbdbdb;}
+        html[data-mode="dark"] body[data-theme="theme-instagram"] { --bg-color: #000; --header-bg: #000; --user-bubble-bg: #262626; --user-bubble-text: #fff; --sidebar-bg: #000; --input-bg: #262626; --border-color: #363636;}
+        body[data-theme="theme-instagram"] #send-button { background: none!important; color: #0095f6!important; }
+        html[data-mode="dark"] body[data-theme="theme-instagram"] #send-button { color: #0095f6!important; }
+
+        /* Twitter / X */
+        body[data-theme="theme-twitter"] { --bg-color: #fff; --text-color: #0f1419; --header-bg: #fff; --user-bubble-bg: #1d9bf0; --ai-bubble-bg: #f7f9f9; --ai-bubble-text: #0f1419; --sidebar-bg: #fff; --input-bg: #eff3f4; --border-color: #eff3f4;}
+        html[data-mode="dark"] body[data-theme="theme-twitter"] { --bg-color: #000; --text-color: #e7e9ea; --header-bg: #000; --border-color: #2f3336; --input-bg: #202327; --user-bubble-bg: #1d9bf0; --ai-bubble-bg: #202327; --ai-bubble-text: #e7e9ea; --sidebar-bg: #000;}
+
+        /* --- Layout & Responsiveness --- */
+        #chat-container { position: relative; }
+        #chat-footer { position: sticky; bottom: 0; }
+        #character-modal { max-height: 90vh; }
+        @media (max-width: 767px) {
+            #chat-container {
+                display: flex;
+                flex-direction: column;
+                height: 100vh; /* Fallback for older browsers */
+                height: 100svh; /* Use small viewport height for mobile */
+            }
+            #message-area { flex: 1; min-height: 0; }
+            #chat-footer { z-index: 10; }
+            #settings-panel {
+                max-width: none;
+                width: 100vw;
+            }
+            #character-modal {
+                top: 0; left: 0;
+                width: 100vw; height: 100vh; height: 100svh;
+                max-width: none; max-height: none;
+                transform: none; border-radius: 0;
+            }
+        }
+
+        /* Custom scrollbar */
+        #message-area::-webkit-scrollbar, #settings-panel-content::-webkit-scrollbar, #sidebar-content::-webkit-scrollbar, #character-modal-content::-webkit-scrollbar, #group-participant-list::-webkit-scrollbar, .custom-select-options::-webkit-scrollbar { width: 6px; }
+        #message-area::-webkit-scrollbar-track, #settings-panel-content::-webkit-scrollbar-track, #sidebar-content::-webkit-scrollbar-track, #character-modal-content::-webkit-scrollbar-track, #group-participant-list::-webkit-scrollbar-track, .custom-select-options::-webkit-scrollbar-track { background: transparent; }
+        #message-area::-webkit-scrollbar-thumb, #settings-panel-content::-webkit-scrollbar-thumb, #sidebar-content::-webkit-scrollbar-thumb, #character-modal-content::-webkit-scrollbar-thumb, #group-participant-list::-webkit-scrollbar-thumb, .custom-select-options::-webkit-scrollbar-thumb { background-color: var(--scrollbar-thumb-color); border-radius: 10px; }
+
+        /* Markdown Styles */
+        .message-bubble p { margin-bottom: 0.5rem; }
+        .message-bubble p:last-child { margin-bottom: 0; }
+        .message-bubble ul, .message-bubble ol { margin-left: 1.25rem; margin-top: 0.5rem; margin-bottom: 0.5rem; }
+        .message-bubble li { margin-bottom: 0.25rem; }
+        .message-bubble pre { background-color: var(--code-bg); padding: 0.75rem; border-radius: 0.5rem; overflow-x: auto; margin: 0.5rem 0; }
+        .message-bubble code { font-family: monospace; }
+        .message-bubble pre code { background: none; padding: 0; }
+        /* Style for multiple parts in one bubble */
+        .message-bubble > *:not(:last-child) { margin-bottom: 0.5rem; }
+
+        .hide-chat-avatars .user-avatar, .hide-chat-avatars .ai-avatar { display: none; }
+
+        .message-timestamp {
+            font-size: 0.65rem;
+            color: #9ca3af;
+            white-space: nowrap;
+            margin-top: 0.25rem;
+        }
+        html[data-mode="dark"] .message-timestamp { color: #6b7280; }
+
+        .delete-action-container { display: none; padding: 4px 0; margin-top: 2px; gap: 8px; }
+        .message-container.selected-for-deletion .delete-action-container { display: flex; }
+        .message-action-button { color: white; padding: 2px 10px; font-size: 0.75rem; border-radius: 1rem; cursor: pointer; border: none; transition: background-color 0.2s; }
+        .delete-message-button { background-color: #ef4444; }
+        .delete-message-button:hover { background-color: #dc2626; }
+        .copy-message-button { background-color: #3b82f6; }
+        .copy-message-button:hover { background-color: #2563eb; }
+
+        .custom-select-container { position: relative; }
+        .custom-select-trigger { display: flex; align-items: center; justify-content: space-between; width: 100%; padding: 0.5rem; border: 1px solid var(--border-color); border-radius: 0.375rem; background-color: var(--input-bg); color: var(--input-text); cursor: pointer; transition: border-color 0.2s; }
+        .custom-select-trigger:focus, .custom-select-trigger.open { outline: 2px solid transparent; outline-offset: 2px; border-color: #3b82f6; }
+        .custom-select-options { position: absolute; top: 100%; left: 0; right: 0; margin-top: 0.25rem; background-color: var(--bg-color); border: 1px solid var(--border-color); border-radius: 0.375rem; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1); z-index: 50; opacity: 0; transform: scale(0.95); transition: opacity 0.1s ease-out, transform 0.1s ease-out; pointer-events: none; }
+        .custom-select-options.open { opacity: 1; transform: scale(1); pointer-events: auto; }
+        .custom-select-option { padding: 0.5rem 0.75rem; cursor: pointer; }
+        .custom-select-option:hover { background-color: var(--hover-bg); }
+        .custom-select-option.selected { background-color: var(--active-char-bg); font-weight: 500; }
+
+        @keyframes typing-bubble { 0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1.0); } }
+        .typing-dot { animation: typing-bubble 1.4s infinite ease-in-out both; }
+        .typing-dot:nth-child(1) { animation-delay: -0.32s; }
+        .typing-dot:nth-child(2) { animation-delay: -0.16s; }
+
+        #typing-indicator-container {
+            position: absolute;
+            bottom: 5rem;
+            left: 1rem;
+            z-index: 5;
+            transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+        }
+        #typing-indicator-container.hidden {
+            opacity: 0;
+            transform: translateY(10px);
+            pointer-events: none;
+        }
+        @media (min-width: 768px) {
+            #typing-indicator-container {
+                 bottom: 5.5rem;
+            }
+        }
+
+        #app-container.loaded {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body class="overflow-hidden" data-theme="theme-imessage">
+
+    <div id="loading-overlay" class="fixed inset-0 bg-theme z-[100] flex flex-col items-center justify-center gap-4 transition-opacity duration-500">
+        <div class="text-2xl font-bold text-theme">Gemna Chat</div>
+        <div class="w-1/2 max-w-xs bg-gray-200 rounded-full h-1.5 dark:bg-gray-700">
+            <div id="loading-bar" class="bg-blue-600 h-1.5 rounded-full transition-all duration-300 ease-linear" style="width: 10%"></div>
+        </div>
+    </div>
+
+    <div id="app-container" class="flex h-screen w-screen bg-theme opacity-0 transition-opacity duration-500">
+        <!-- Sidebar -->
+        <div id="sidebar" class="absolute md:relative z-30 h-full w-full md:w-1/3 lg:w-1/4 bg-sidebar border-r border-sidebar flex-col md:flex -translate-x-full md:translate-x-0 transition-transform duration-300 ease-in-out">
+            <header class="p-4 border-b border-sidebar flex justify-between items-center flex-shrink-0">
+                <h1 class="text-lg font-bold text-theme">Chats</h1>
+                <div class="flex items-center gap-2">
+                    <button id="add-character-button" title="Add New Character" class="p-2 rounded-full hover-theme">
+                        <svg data-lucide="user-plus" class="icon-theme h-5 w-5"></svg>
+                    </button>
+                    <button id="add-group-button" title="Add New Group" class="p-2 rounded-full hover-theme">
+                        <svg data-lucide="users" class="icon-theme h-5 w-5"></svg>
+                    </button>
+                    <button id="close-sidebar-button" class="p-2 rounded-full hover-theme md:hidden">
+                        <svg data-lucide="x" class="icon-theme h-5 w-5"></svg>
+                    </button>
+                </div>
+            </header>
+            <div id="sidebar-content" class="flex-1 overflow-y-auto p-2">
+                <div id="character-list" class="space-y-1"></div>
+            </div>
+        </div>
+        <div id="sidebar-overlay" class="fixed inset-0 bg-black bg-opacity-20 z-20 hidden"></div>
+
+        <!-- Main Chat Area -->
+        <div id="chat-container" class="flex flex-col h-full flex-1">
+            <header id="chat-header" class="flex items-center justify-between p-2 md:p-3 border-b border-theme bg-header shadow-sm flex-shrink-0 h-16">
+                <div class="flex items-center gap-3 min-w-0">
+                    <button id="show-sidebar-button" class="p-2 rounded-full hover-theme md:hidden">
+                        <svg data-lucide="menu" class="icon-theme h-5 w-5"></svg>
+                    </button>
+                    <div id="header-avatar-stack" class="flex items-center -space-x-4">
+                         <img id="header-avatar" src="" class="w-8 h-8 md:w-10 md:h-10 rounded-full object-cover border-2 border-white dark:border-gray-800">
+                    </div>
+                    <div class="min-w-0">
+                        <h1 id="header-name" class="font-bold text-md text-header truncate"></h1>
+                        <p id="header-status" class="text-xs opacity-80 text-header">Online</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-2 relative">
+                     <button id="clear-local-chats-header-button" title="Clear Local Chat" class="p-2 rounded-full hover-theme">
+                        <svg data-lucide="brush" class="icon-theme h-5 w-5"></svg>
+                    </button>
+                     <button id="clear-chat-button" title="Clear All Chat History" class="p-2 rounded-full hover-theme">
+                        <svg data-lucide="trash-2" class="icon-theme h-5 w-5"></svg>
+                    </button>
+                    <button id="download-chat-button" title="Download This Character & Chat" class="p-2 rounded-full hover-theme">
+                        <svg data-lucide="download" class="icon-theme h-5 w-5"></svg>
+                    </button>
+                     <button id="settings-button-main" title="Settings" class="p-2 rounded-full hover-theme">
+                        <svg data-lucide="settings" class="icon-theme h-5 w-5"></svg>
+                    </button>
+                </div>
+            </header>
+
+            <main id="message-area" class="flex flex-col flex-1 p-4 overflow-y-auto"></main>
+
+            <div id="typing-indicator-container" class="hidden">
+                <div class="flex items-center gap-2">
+                    <img id="typing-avatar" src="" class="w-8 h-8 rounded-full object-cover flex-shrink-0">
+                    <div class="ai-bubble flex items-center justify-center gap-1.5 p-3 rounded-2xl rounded-bl-lg">
+                        <span class="typing-dot w-2 h-2 bg-gray-500 dark:bg-gray-400 rounded-full"></span>
+                        <span class="typing-dot w-2 h-2 bg-gray-500 dark:bg-gray-400 rounded-full"></span>
+                        <span class="typing-dot w-2 h-2 bg-gray-500 dark:bg-gray-400 rounded-full"></span>
+                    </div>
+                </div>
+            </div>
+
+            <footer id="chat-footer" class="p-2 md:p-3 border-t border-theme bg-header flex-shrink-0">
+                <div id="image-preview-wrapper" class="hidden mb-2 relative w-24 h-24">
+                    <img id="image-preview" class="w-full h-full object-cover rounded-md">
+                    <button id="remove-image-button" type="button" class="absolute -top-2 -right-2 bg-gray-700 text-white rounded-full p-1">
+                        <svg data-lucide="x" class="h-3 w-3"></svg>
+                    </button>
+                </div>
+                <div id="guidance-wrapper" class="hidden mb-2">
+                    <div class="flex items-center gap-2 text-sm text-theme opacity-80 mb-1">
+                        <svg data-lucide="sparkles" class="h-4 w-4"></svg>
+                        <span>Guide the next AI response...</span>
+                    </div>
+                    <input id="guidance-input" type="text" placeholder="e.g., Explain it like I'm five years old." class="w-full p-2 border border-theme rounded-md bg-input text-input">
+                </div>
+                <form id="message-form" class="flex items-center gap-2 md:gap-3">
+                    <button type="button" id="guidance-button" title="Guide AI Response" class="p-2 rounded-full hover-theme">
+                        <svg data-lucide="sparkles" class="icon-theme h-5 w-5"></svg>
+                    </button>
+                    <button type="button" id="image-upload-button" class="p-2 rounded-full hover-theme">
+                         <span class="theme-icon icon-imessage"><svg data-lucide="camera" class="icon-theme h-5 w-5"></svg></span>
+                         <span class="theme-icon icon-instagram"><svg data-lucide="camera" class="icon-theme h-5 w-5"></svg></span>
+                         <span class="theme-icon icon-messenger"><svg data-lucide="image" class="icon-theme h-5 w-5"></svg></span>
+                         <span class="theme-icon icon-twitter"><svg data-lucide="image" class="icon-theme h-5 w-5"></svg></span>
+                         <span class="theme-icon icon-whatsapp"><svg data-lucide="paperclip" class="icon-theme h-5 w-5"></svg></span>
+                    </button>
+                    <div id="message-input-wrapper" class="flex-1 flex items-center px-4 py-1.5 border border-theme rounded-full bg-input">
+                        <input id="message-input" type="text" placeholder="Type a message..." class="w-full bg-transparent focus:outline-none text-input" autocomplete="off">
+                         <button type="button" id="whatsapp-camera-button" class="theme-icon icon-whatsapp p-2 -mr-2"><svg data-lucide="camera" class="icon-theme h-5 w-5"></svg></button>
+                    </div>
+                    <button id="send-button" type="submit" class="p-2 md:p-3 rounded-full flex items-center justify-center bg-button text-button">
+                        <div id="theme-icons-container">
+                            <span class="theme-icon icon-imessage"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L2 12h5v8h10v-8h5L12 2z"/></svg></span>
+                            <span class="theme-icon icon-whatsapp"><svg data-lucide="mic" class="icon-theme h-5 w-5"></svg></span>
+                            <span class="theme-icon icon-messenger"><svg data-lucide="thumbs-up" class="icon-theme h-5 w-5"></svg></span>
+                            <span class="theme-icon icon-instagram font-semibold text-sm" style="color: #0095f6;">Send</span>
+                            <span class="theme-icon icon-twitter"><svg data-lucide="send" class="icon-theme h-5 w-5"></svg></span>
+                        </div>
+                        <svg data-lucide="send" id="send-icon-generic" class="h-5 w-5 hidden"></svg>
+                    </button>
+                </form>
+            </footer>
+        </div>
+
+        <!-- Settings Panel -->
+        <div id="settings-panel-overlay" class="fixed inset-0 bg-black bg-opacity-50 z-40 hidden"></div>
+        <div id="settings-panel" class="fixed top-0 right-0 h-full w-full max-w-sm transform translate-x-full transition-transform duration-300 ease-in-out shadow-lg z-50 flex flex-col bg-theme">
+            <header class="flex items-center justify-between p-4 border-b border-theme">
+                <h2 class="text-xl font-bold text-theme">Settings</h2>
+                <div class="flex items-center gap-1">
+                    <a href="help.html" target="_blank" title="Help" class="p-2 rounded-full hover-theme">
+                        <svg data-lucide="help-circle" class="icon-theme h-5 w-5"></svg>
+                    </a>
+                    <button id="close-settings-button" class="p-2 rounded-full hover-theme">
+                        <svg data-lucide="x" class="icon-theme h-5 w-5"></svg>
+                    </button>
+                </div>
+            </header>
+            <div id="settings-panel-content" class="flex-1 p-4 md:p-6 overflow-y-auto space-y-6">
+                 <div>
+                    <h3 class="font-semibold mb-3 text-theme">Account</h3>
+                    <div id="account-info-signed-out">
+                        <p class="text-sm text-center mb-3">Sign in to sync your chats and settings across devices.</p>
+                        <div class="space-y-3">
+                            <button id="google-signin-button" class="w-full flex items-center justify-center gap-3 bg-blue-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-blue-700 transition-colors">
+                                <svg class="w-5 h-5" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.611 20.083H42V20H24v8h11.303c-1.649 4.657-6.08 8-11.303 8c-6.627 0-12-5.373-12-12s5.373-12 12-12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4C12.955 4 4 12.955 4 24s8.955 20 20 20s20-8.955 20-20c0-1.341-.138-2.65-.389-3.917z"></path><path fill="#FF3D00" d="M6.306 14.691l6.571 4.819C14.655 15.108 18.961 12 24 12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4C16.318 4 9.656 8.337 6.306 14.691z"></path><path fill="#4CAF50" d="M24 44c5.166 0 9.86-1.977 13.409-5.192l-6.19-5.238C29.211 35.091 26.715 36 24 36c-5.202 0-9.619-3.317-11.283-7.946l-6.522 5.025C9.505 39.556 16.227 44 24 44z"></path><path fill="#1976D2" d="M43.611 20.083H42V20H24v8h11.303c-.792 2.237-2.231 4.166-4.087 5.571l6.19 5.238C42.021 35.596 44 30.138 44 24c0-1.341-.138-2.65-.389-3.917z"></path></svg>
+                                <span>Sign in with Google</span>
+                            </button>
+                            <button id="anonymous-signin-button" class="w-full bg-gray-500 text-white font-bold py-3 px-4 rounded-lg hover:bg-gray-600 transition-colors">Sign in Anonymously</button>
+                        </div>
+                    </div>
+                    <div id="account-info-signed-in" class="hidden">
+                        <div id="user-info" class="text-center mb-4"></div>
+                        <button id="sign-out-button" class="w-full bg-gray-600 text-white font-bold py-2.5 px-4 rounded-lg hover:bg-gray-700 transition-colors">
+                            Sign Out
+                        </button>
+                    </div>
+                </div>
+                 <div>
+                    <h3 class="font-semibold mb-3 text-theme">Appearance</h3>
+                    <div class="flex items-center justify-between mb-4">
+                        <label for="theme-switch" class="text-sm font-medium text-theme">Dark Mode</label>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" id="theme-switch" class="sr-only peer">
+                            <div class="w-11 h-6 bg-gray-200 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+                        </label>
+                    </div>
+                    <div class="flex items-center justify-between mb-4">
+                        <label for="show-avatars-switch" class="text-sm font-medium text-theme">Show Avatars in Chat</label>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" id="show-avatars-switch" class="sr-only peer">
+                            <div class="w-11 h-6 bg-gray-200 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+                        </label>
+                    </div>
+                     <div class="flex items-center justify-between mb-4">
+                        <label for="show-timestamps-switch" class="text-sm font-medium text-theme">Show Timestamps</label>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" id="show-timestamps-switch" class="sr-only peer">
+                            <div class="w-11 h-6 bg-gray-200 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+                        </label>
+                    </div>
+                    <label for="theme-select" class="block text-sm font-medium mb-1 text-theme">Interface Style</label>
+                    <select id="theme-select">
+                        <option value="theme-imessage">iMessage</option>
+                        <option value="theme-whatsapp">WhatsApp</option>
+                        <option value="theme-messenger">Messenger</option>
+                        <option value="theme-instagram">Instagram</option>
+                        <option value="theme-twitter">X (Twitter)</option>
+                    </select>
+                </div>
+                 <div>
+                    <h3 class="font-semibold mb-3 text-theme">Your Character</h3>
+                    <div class="flex items-center gap-4">
+                        <img id="user-avatar-preview" class="w-16 h-16 rounded-full object-cover cursor-pointer bg-gray-200 dark:bg-gray-700">
+                        <div class="flex-1">
+                            <label for="user-name-input" class="block text-sm font-medium mb-1 text-theme">Your Name</label>
+                            <input type="text" id="user-name-input" class="w-full p-2 border border-theme rounded-md bg-input text-input">
+                        </div>
+                    </div>
+                </div>
+                 <div>
+                    <h3 class="font-semibold mb-3 text-theme">Time Settings</h3>
+                     <label for="time-source-select" class="block text-sm font-medium mb-1 text-theme">Timestamp Source</label>
+                    <select id="time-source-select">
+                        <option value="device">Device Time</option>
+                        <option value="character">Character Time</option>
+                    </select>
+                </div>
+                <div>
+                    <h3 class="font-semibold mb-3 text-theme">API & Model</h3>
+                    <div class="mb-4">
+                        <label for="api-provider-select" class="block text-sm font-medium mb-1 text-theme">API Provider</label>
+                        <select id="api-provider-select">
+                            <option value="gemini">Google Gemini</option>
+                            <option value="groq">Groq</option>
+                            <option value="openrouter">OpenRouter</option>
+                        </select>
+                    </div>
+
+                    <!-- Gemini Settings -->
+                    <div id="gemini-settings-block">
+                        <div class="mb-4">
+                            <label for="model-select" class="block text-sm font-medium mb-1 text-theme">Gemini Model</label>
+                            <select id="model-select">
+                                <option value="gemini-1.5-flash-latest">Gemini 1.5 Flash (Default)</option>
+                                <option value="gemini-1.5-pro-latest">Gemini 1.5 Pro</option>
+                            </select>
+                        </div>
+                        <div class="flex justify-between items-center mb-1">
+                             <label class="block text-sm font-medium text-theme">Gemini API Key</label>
+                        </div>
+                        <div class="space-y-2">
+                             <input type="password" id="gemini-api-key-input" class="w-full p-2 border border-theme rounded-md bg-input text-input" placeholder="Enter your Gemini API Key">
+                        </div>
+                        <p class="text-xs text-gray-500 mt-2">Get your free API key from <a href="https://aistudio.google.com/app/apikey" target="_blank" class="text-blue-500 underline">Google AI Studio</a>.</p>
+                    </div>
+
+                    <!-- Groq Settings -->
+                    <div id="groq-settings-block" class="hidden">
+                        <div class="mb-4">
+                             <label for="groq-model-select" class="block text-sm font-medium mb-1 text-theme">Groq Model</label>
+                            <select id="groq-model-select">
+                                <option value="llama3-70b-8192">Llama3 70b</option>
+                                <option value="llama3-8b-8192">Llama3 8b</option>
+                                <option value="gemma-7b-it">Gemma 7b</option>
+                                <option value="mixtral-8x7b-32768">Mixtral 8x7b</option>
+                                <option value="custom">Custom Model...</option>
+                            </select>
+                        </div>
+                        <div id="groq-custom-model-wrapper" class="hidden mb-4">
+                            <label for="groq-custom-model-input" class="block text-sm font-medium mb-1 text-theme">Custom Groq Model</label>
+                            <input type="text" id="groq-custom-model-input" class="w-full p-2 border border-theme rounded-md bg-input text-input" placeholder="e.g., gemma2-9b-it">
+                        </div>
+                        <label for="groq-api-key-input" class="block text-sm font-medium mb-1 text-theme">Groq API Key</label>
+                        <input type="password" id="groq-api-key-input" class="w-full p-2 border border-theme rounded-md bg-input text-input" placeholder="gsk_...">
+                        <p class="text-xs text-gray-500 mt-2">Get your free API key from <a href="https://console.groq.com/keys" target="_blank" class="text-blue-500 underline">GroqCloud</a>.</p>
+                    </div>
+
+                    <!-- OpenRouter Settings -->
+                    <div id="openrouter-settings-block" class="hidden">
+                        <div class="mb-4">
+                            <label for="openrouter-model-select" class="block text-sm font-medium mb-1 text-theme">OpenRouter Model</label>
+                            <select id="openrouter-model-select">
+                                <option value="google/gemini-flash-1.5">Google: Gemini 1.5 Flash</option>
+                                <option value="google/gemini-pro-1.5">Google: Gemini 1.5 Pro</option>
+                                <option value="anthropic/claude-3-haiku">Anthropic: Claude 3 Haiku</option>
+                                <option value="openai/gpt-4o">OpenAI: GPT-4o</option>
+                                <option value="meta-llama/llama-3-70b-instruct">Meta: Llama 3 70B</option>
+                                <option value="mistralai/mistral-large">Mistral: Large</option>
+                                <option value="custom">Custom Model...</option>
+                            </select>
+                        </div>
+                         <div id="openrouter-custom-model-wrapper" class="hidden mb-4">
+                            <label for="openrouter-custom-model-input" class="block text-sm font-medium mb-1 text-theme">Custom OpenRouter Model</label>
+                            <input type="text" id="openrouter-custom-model-input" class="w-full p-2 border border-theme rounded-md bg-input text-input" placeholder="e.g., cognitivecomputations/dolphin-mixtral-8x7b">
+                        </div>
+                        <label for="openrouter-api-key-input" class="block text-sm font-medium mb-1 text-theme">OpenRouter API Key</label>
+                        <input type="password" id="openrouter-api-key-input" class="w-full p-2 border border-theme rounded-md bg-input text-input" placeholder="sk-or-...">
+                        <p class="text-xs text-gray-500 mt-2">Get your free API key from <a href="https://openrouter.ai/keys" target="_blank" class="text-blue-500 underline">OpenRouter</a>.</p>
+                    </div>
+                </div>
+                <div>
+                    <h3 class="font-semibold mb-3 text-theme">Data Management</h3>
+                    <div class="space-y-2">
+                         <button id="upload-chat-button" class="w-full flex items-center justify-center gap-2 bg-white dark:bg-gray-700 border border-theme py-2 px-4 rounded-md hover:bg-gray-50 dark:hover:bg-gray-600 transition-opacity text-theme">
+                            <svg data-lucide="upload" class="icon-theme h-4 w-4"></svg>
+                            <span>Import Character Data</span>
+                        </button>
+                        <p class="text-xs text-gray-500 mt-1">Import a character and their chat history from a .json file.</p>
+                        <button id="restore-from-cloud-button" class="w-full flex items-center justify-center gap-2 bg-white dark:bg-gray-700 border border-theme py-2 px-4 rounded-md hover:bg-gray-50 dark:hover:bg-gray-600 transition-opacity text-theme" disabled>
+                            <svg data-lucide="cloud-download" class="icon-theme h-4 w-4"></svg>
+                            <span>Restore from Cloud</span>
+                        </button>
+                        <p class="text-xs text-gray-500 mt-1">Fetch the latest history for the current chat from the cloud. Sign-in required.</p>
+                    </div>
+                </div>
+                 <div class="border-t border-theme pt-6">
+                    <h3 class="font-semibold mb-3 text-red-500">Danger Zone</h3>
+                    <div class="flex items-center justify-between">
+                        <label for="nsfw-switch" class="text-sm font-medium text-theme">Allow Potentially NSFW Content</label>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" id="nsfw-switch" class="sr-only peer">
+                            <div class="w-11 h-6 bg-gray-200 rounded-full peer dark:bg-gray-700 peer-checked:bg-red-500 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600"></div>
+                        </label>
+                    </div>
+                    <p class="text-xs text-gray-500 mt-1 mb-4">By enabling this, you confirm that you are at least 18 years old.</p>
+                    <button id="reset-app-button" class="w-full bg-red-600 text-white font-bold py-2.5 px-4 rounded-lg hover:bg-red-700 transition-colors mt-2">
+                        Reset & Erase All Data
+                    </button>
+                     <p class="text-xs text-gray-500 mt-2">This will permanently delete all your chats, history, and settings from this device and from your cloud account (if signed in). This action cannot be undone.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Character & Group Modal -->
+        <div id="character-modal-overlay" class="fixed inset-0 bg-black bg-opacity-60 z-40 hidden"></div>
+        <div id="character-modal" class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-md bg-theme rounded-lg shadow-xl z-50 hidden grid grid-rows-[auto_1fr_auto]">
+            <header id="character-modal-header" class="px-4 md:px-6 py-4 flex-shrink-0">
+                <h2 id="character-modal-title" class="text-2xl font-bold text-theme">Add New Chat</h2>
+            </header>
+            <div id="character-modal-content" class="overflow-y-auto min-h-0 px-4 md:px-6 space-y-4">
+
+                <div id="group-name-wrapper" class="hidden">
+                    <label for="group-name-input" class="block text-sm font-medium mb-1 text-theme">Group Name</label>
+                    <input type="text" id="group-name-input" class="w-full p-2 border border-theme rounded-md bg-input text-input">
+                </div>
+
+                <div id="character-details-wrapper" class="flex items-center gap-4">
+                    <img id="char-avatar-preview" class="w-16 h-16 rounded-full object-cover cursor-pointer bg-gray-200 dark:bg-gray-700">
+                    <div class="flex-1">
+                         <label for="char-name-input" class="block text-sm font-medium mb-1 text-theme">AI Name</label>
+                         <input type="text" id="char-name-input" class="w-full p-2 border border-theme rounded-md bg-input text-input" placeholder="Start with a name or enhance below">
+                    </div>
+                </div>
+
+                <div id="character-fields">
+                    <div>
+                        <label for="char-type-select" class="block text-sm font-medium mb-1 text-theme">Character Type</label>
+                        <select id="char-type-select">
+                            <option value="messaging">Messaging</option>
+                            <option value="roleplay">Roleplay</option>
+                            <option value="assistant">Assistant</option>
+                        </select>
+                    </div>
+                     <div>
+                        <label for="char-language-input" class="block text-sm font-medium mb-1 text-theme">Language</label>
+                        <input type="text" id="char-language-input" class="w-full p-2 border border-theme rounded-md bg-input text-input" placeholder="e.g., English, Spanish, Japanese">
+                    </div>
+                    <div id="ai-persona-wrapper">
+                        <div class="flex justify-between items-center mb-1">
+                            <label for="char-persona-input" id="ai-persona-label" class="block text-sm font-medium text-theme">AI Persona</label>
+                            <div class="flex items-center gap-2">
+                                <button type="button" id="analyze-image-button" class="p-1 rounded-full hover-theme hidden" title="Analyze Appearance from Image">
+                                    <svg data-lucide="scan-face" class="h-4 w-4 icon-theme"></svg>
+                                </button>
+                                <button type="button" id="generate-image-prompt-button" class="p-1 rounded-full hover-theme" title="Analyze Persona for Image Prompt">
+                                    <svg data-lucide="wand-2" class="h-4 w-4 icon-theme"></svg>
+                                </button>
+                                <button type="button" id="enhance-persona-button" class="p-1 rounded-full hover-theme" title="Enhance Persona with AI">
+                                    <svg data-lucide="sparkles" class="h-4 w-4 icon-theme"></svg>
+                                </button>
+                            </div>
+                        </div>
+                        <textarea id="char-persona-input" rows="4" class="w-full p-2 border border-theme rounded-md bg-input text-input" placeholder="Enter persona details or enhance..."></textarea>
+                    </div>
+                </div>
+
+                <div id="group-fields" class="hidden">
+                    <div>
+                         <label for="group-type-select" class="block text-sm font-medium mb-1 text-theme">Group Type</label>
+                        <select id="group-type-select">
+                            <option value="messaging">Messaging</option>
+                            <option value="roleplay">Roleplay</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-1 text-theme">Select Participants</label>
+                        <div id="group-participant-list" class="max-h-32 overflow-y-auto border border-theme rounded-md p-2 space-y-2 bg-input">
+                        </div>
+                    </div>
+                </div>
+
+                 <div id="user-persona-wrapper">
+                    <label for="char-user-persona-input" id="user-persona-label" class="block text-sm font-medium mb-1 text-theme">Your Persona (Optional)</label>
+                    <textarea id="char-user-persona-input" rows="3" class="w-full p-2 border border-theme rounded-md bg-input text-input"></textarea>
+                </div>
+            </div>
+            <footer id="character-modal-footer" class="px-4 md:px-6 py-4 flex-shrink-0 border-t border-theme">
+                <div class="flex justify-between items-center">
+                    <button id="delete-character-button" class="text-red-500 hover:text-red-700 font-semibold hidden">Delete</button>
+                    <div class="flex gap-2">
+                        <button id="cancel-character-modal" class="py-2 px-4 rounded-md bg-gray-500 text-white hover:bg-gray-600">Cancel</button>
+                        <button id="save-character-button" class="bg-blue-600 text-white font-bold py-2 px-4 rounded-md hover:bg-blue-700 transition-colors">Save</button>
+                    </div>
+                </div>
+            </footer>
+        </div>
+
+        <!-- Avatar Source Modal -->
+        <div id="avatar-source-overlay" class="fixed inset-0 bg-black bg-opacity-60 z-50 hidden"></div>
+        <div id="avatar-source-modal" class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-xs bg-theme rounded-lg shadow-xl p-4 z-50 hidden flex-col gap-3">
+            <h3 class="text-lg font-bold text-center text-theme">Change Avatar</h3>
+            <div class="flex flex-col gap-3">
+                <button id="avatar-upload-device-button" class="w-full py-2 px-4 rounded-md bg-blue-600 text-white hover:bg-blue-700 transition-colors">Upload from Device</button>
+                <button id="avatar-enter-link-button" class="w-full py-2 px-4 rounded-md bg-gray-200 dark:bg-gray-600 text-theme hover-theme">Enter Image URL</button>
+            </div>
+            <div id="avatar-link-input-wrapper" class="hidden w-full flex-col gap-2">
+                <input type="url" id="avatar-url-input" placeholder="https://..." class="w-full p-2 border border-theme rounded-md bg-input text-input">
+                <button id="avatar-url-confirm-button" class="w-full py-2 px-4 rounded-md bg-green-600 text-white hover:bg-green-700">Confirm</button>
+            </div>
+            <button id="avatar-source-cancel-button" class="w-full py-2 px-4 rounded-md bg-gray-500 hover:bg-gray-600 text-white mt-2">Cancel</button>
+        </div>
+
+        <!-- Import Character Confirmation Modal -->
+        <div id="import-character-overlay" class="fixed inset-0 bg-black bg-opacity-60 z-50 hidden"></div>
+        <div id="import-character-modal" class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-sm bg-theme rounded-lg shadow-xl p-6 z-50 hidden flex-col gap-4 text-theme">
+            <h3 class="text-xl font-bold text-center">Character Exists</h3>
+            <p id="import-character-message" class="text-sm text-center">A character with this name already exists. How would you like to proceed?</p>
+            <div class="flex flex-col gap-3 mt-2">
+                <button id="import-replace-char-button" class="w-full py-2.5 px-4 rounded-md bg-red-600 text-white hover:bg-red-700 transition-colors">
+                    <strong>Replace Existing Character</strong>
+                    <span class="block text-xs opacity-80">Overwrites the current character and their chat.</span>
+                </button>
+                <button id="import-create-new-char-button" class="w-full py-2.5 px-4 rounded-md bg-blue-600 text-white hover:bg-blue-700 transition-colors">
+                    <strong>Create as New Character</strong>
+                    <span class="block text-xs opacity-80">Imports the character as a new chat.</span>
+                </button>
+            </div>
+            <button id="import-char-cancel-button" class="w-full py-2 px-4 rounded-md bg-gray-500 hover:bg-gray-600 text-white mt-2">Cancel</button>
+        </div>
+
+        <!-- Generic Confirmation Modal -->
+        <div id="confirm-overlay" class="fixed inset-0 bg-black bg-opacity-60 z-50 hidden"></div>
+        <div id="confirm-modal" class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-sm bg-theme text-theme rounded-lg shadow-xl p-6 z-50 hidden flex-col gap-4">
+            <h3 id="confirm-title" class="text-xl font-bold text-center">Confirm Action</h3>
+            <p id="confirm-message" class="text-sm text-center">Are you sure?</p>
+            <div class="flex justify-end gap-3 mt-4">
+                <button id="confirm-cancel-button" class="py-2 px-4 rounded-md bg-gray-500 hover:bg-gray-600 text-white">Cancel</button>
+                <button id="confirm-ok-button" class="font-bold py-2 px-4 rounded-md text-white transition-colors">Confirm</button>
+            </div>
+        </div>
+
+        <input type="file" id="user-avatar-upload-input" class="hidden" accept="image/*">
+        <input type="file" id="char-avatar-upload-input" class="hidden" accept="image/*">
+        <input type="file" id="image-input" class="hidden" accept="image/*">
+        <input type="file" id="chat-upload-input" class="hidden" accept=".json,text/plain">
+    </div>
+
+      <script type="module">
+        // Your provided Firebase configuration
+        const firebaseConfig = typeof __firebase_config !== 'undefined'
+            ? JSON.parse(__firebase_config)
+            : {
+                apiKey: "AIzaSyBgSwBpREtdb2Hvf-ByloRMAt1bEdC2_Hs",
+                authDomain: "chatterappvx.firebaseapp.com",
+                projectId: "chatterappvx",
+                storageBucket: "chatterappvx.firebasestorage.app",
+                messagingSenderId: "613019810209",
+                appId: "1:613019810209:web:f08ab37264cddb7c32b3e0",
+                measurementId: "G-VB121YTR92"
+            };
+
+        // Import Firebase modules
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import {
+            getAuth,
+            onAuthStateChanged,
+            GoogleAuthProvider,
+            signInWithPopup,
+            signInAnonymously,
+            signOut
+        } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import {
+            getFirestore,
+            doc,
+            getDoc,
+            setDoc,
+            deleteDoc,
+            collection,
+            addDoc,
+            getDocs,
+            onSnapshot,
+            query,
+            orderBy,
+            serverTimestamp,
+            Timestamp,
+            writeBatch
+        } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        const loadingOverlay = document.getElementById('loading-overlay');
+        const loadingBar = document.getElementById('loading-bar');
+        const appContainer = document.getElementById('app-container');
+        let loadingFinished = false;
+
+        function updateLoaderProgress(percentage) {
+            if (loadingFinished || !loadingBar) return;
+            loadingBar.style.width = `${percentage}%`;
+        }
+
+        function finishLoading() {
+            if (loadingFinished || !loadingOverlay) return;
+            loadingFinished = true;
+
+            updateLoaderProgress(100);
+
+            setTimeout(() => {
+                if (loadingOverlay) loadingOverlay.style.opacity = '0';
+                if (appContainer) appContainer.classList.add('loaded');
+
+                setTimeout(() => {
+                    if (loadingOverlay) loadingOverlay.style.display = 'none';
+                }, 500);
+            }, 300);
+        }
+
+
+        // Initialize Firebase
+        let app;
+        let auth;
+        let db;
+        try {
+            app = initializeApp(firebaseConfig);
+            auth = getAuth(app);
+            db = getFirestore(app);
+            updateLoaderProgress(20);
+        } catch (e) {
+            console.error("Firebase initialization failed. Please check your firebaseConfig.", e);
+            finishLoading();
+        }
+
+
+        // --- DOM Elements ---
+        const accountInfoSignedOut = document.getElementById('account-info-signed-out');
+        const accountInfoSignedIn = document.getElementById('account-info-signed-in');
+        const googleSigninButton = document.getElementById('google-signin-button');
+        const anonymousSigninButton = document.getElementById('anonymous-signin-button');
+        const signOutButton = document.getElementById('sign-out-button');
+        const userInfoEl = document.getElementById('user-info');
+        const sidebar = document.getElementById('sidebar');
+        const sidebarOverlay = document.getElementById('sidebar-overlay');
+        const showSidebarButton = document.getElementById('show-sidebar-button');
+        const closeSidebarButton = document.getElementById('close-sidebar-button');
+        const addCharacterButton = document.getElementById('add-character-button');
+        const addGroupButton = document.getElementById('add-group-button');
+        const clearLocalChatsHeaderButton = document.getElementById('clear-local-chats-header-button');
+        const clearChatButton = document.getElementById('clear-chat-button');
+        const settingsPanel = document.getElementById('settings-panel');
+        const settingsOverlay = document.getElementById('settings-panel-overlay');
+        const closeSettingsButton = document.getElementById('close-settings-button');
+        const messageForm = document.getElementById('message-form');
+        const messageInput = document.getElementById('message-input');
+        const messageArea = document.getElementById('message-area');
+        const imageUploadButton = document.getElementById('image-upload-button');
+        const imageInput = document.getElementById('image-input');
+        const downloadChatButton = document.getElementById('download-chat-button');
+        const uploadChatButton = document.getElementById('upload-chat-button');
+        const chatUploadInput = document.getElementById('chat-upload-input');
+        const restoreFromCloudButton = document.getElementById('restore-from-cloud-button');
+        const themeIconsContainer = document.getElementById('theme-icons-container');
+        const genericSendIcon = document.getElementById('send-icon-generic');
+        const characterListEl = document.getElementById('character-list');
+        const guidanceWrapper = document.getElementById('guidance-wrapper');
+        const guidanceButton = document.getElementById('guidance-button');
+        const guidanceInput = document.getElementById('guidance-input');
+        const imagePreviewWrapper = document.getElementById('image-preview-wrapper');
+        const imagePreview = document.getElementById('image-preview');
+        const removeImageButton = document.getElementById('remove-image-button');
+        const typingIndicatorContainer = document.getElementById('typing-indicator-container');
+        const whatsappCameraButton = document.getElementById('whatsapp-camera-button');
+        const themeSwitch = document.getElementById('theme-switch');
+        const themeSelect = document.getElementById('theme-select');
+        const apiProviderSelect = document.getElementById('api-provider-select');
+        const modelSelect = document.getElementById('model-select');
+        const geminiApiKeyInput = document.getElementById('gemini-api-key-input');
+        const groqModelSelect = document.getElementById('groq-model-select');
+        const groqApiKeyInput = document.getElementById('groq-api-key-input');
+        const groqCustomModelInput = document.getElementById('groq-custom-model-input');
+        const groqCustomModelWrapper = document.getElementById('groq-custom-model-wrapper');
+        const openrouterModelSelect = document.getElementById('openrouter-model-select');
+        const openrouterApiKeyInput = document.getElementById('openrouter-api-key-input');
+        const openrouterCustomModelInput = document.getElementById('openrouter-custom-model-input');
+        const openrouterCustomModelWrapper = document.getElementById('openrouter-custom-model-wrapper');
+        const nsfwSwitch = document.getElementById('nsfw-switch');
+        const userNameInput = document.getElementById('user-name-input');
+        const userAvatarPreview = document.getElementById('user-avatar-preview');
+        const showAvatarsSwitch = document.getElementById('show-avatars-switch');
+        const showTimestampsSwitch = document.getElementById('show-timestamps-switch');
+        const timeSourceSelect = document.getElementById('time-source-select');
+        const resetAppButton = document.getElementById('reset-app-button');
+        const characterModalOverlay = document.getElementById('character-modal-overlay');
+        const characterModal = document.getElementById('character-modal');
+        const characterModalTitle = document.getElementById('character-modal-title');
+        const groupNameInput = document.getElementById('group-name-input');
+        const charNameInput = document.getElementById('char-name-input');
+        const groupParticipantList = document.getElementById('group-participant-list');
+        const groupTypeSelect = document.getElementById('group-type-select');
+        const charTypeSelect = document.getElementById('char-type-select');
+        const userPersonaWrapper = document.getElementById('user-persona-wrapper');
+        const aiPersonaLabel = document.getElementById('ai-persona-label');
+        const userPersonaLabel = document.getElementById('user-persona-label');
+        const charLanguageInput = document.getElementById('char-language-input');
+        const charAvatarPreview = document.getElementById('char-avatar-preview');
+        const charPersonaInput = document.getElementById('char-persona-input');
+        const charUserPersonaInput = document.getElementById('char-user-persona-input');
+        const saveCharacterButton = document.getElementById('save-character-button');
+        const cancelCharacterModal = document.getElementById('cancel-character-modal');
+        const deleteCharacterButton = document.getElementById('delete-character-button');
+        const enhancePersonaButton = document.getElementById('enhance-persona-button');
+        const generateImagePromptButton = document.getElementById('generate-image-prompt-button');
+        const analyzeImageButton = document.getElementById('analyze-image-button');
+        const avatarSourceOverlay = document.getElementById('avatar-source-overlay');
+        const avatarSourceModal = document.getElementById('avatar-source-modal');
+        const userAvatarUploadInput = document.getElementById('user-avatar-upload-input');
+        const charAvatarUploadInput = document.getElementById('char-avatar-upload-input');
+        const importCharacterOverlay = document.getElementById('import-character-overlay');
+        const importCharacterModal = document.getElementById('import-character-modal');
+        const importCharacterMessage = document.getElementById('import-character-message');
+        const importReplaceCharButton = document.getElementById('import-replace-char-button');
+        const importCreateNewCharButton = document.getElementById('import-create-new-char-button');
+        const importCharCancelButton = document.getElementById('import-char-cancel-button');
+
+        // --- State & Data ---
+        let currentUser = null;
+        let chatHistory = [];
+        let settings = {};
+        let chats = [];
+        let attachedImage = null;
+        let editingChatId = null;
+        let modalMode = 'character';
+        let tempCharAvatarData = null;
+        let chatListenerUnsubscribe = null;
+        let activeAvatarContext = null;
+
+        const SETTINGS_KEY = 'gemna-chat-settings-v32';
+        const CHATS_KEY = 'gemna-chat-chats-v32';
+        const CHAT_HISTORY_KEY_PREFIX = 'gemna-chat-history-v32_';
+        const ENCRYPTION_KEY_NAME = 'gemna-chat-encryption-key-v1';
+
+        const defaultCharacters = [
+            {
+                id: 'gemna-bot-main',
+                name: 'Gemna',
+                avatar: 'https://placehold.co/48x48/8b5cf6/ffffff?text=G',
+                persona: "You are Gemna, a helpful, extremely knowledgeable, and friendly AI assistant with a female persona. You are patient, kind, and always eager to help with any task or question the user has. Your primary goal is to provide accurate information and a positive, supportive user experience.",
+                userPersona: '',
+                language: 'English',
+                type: 'assistant',
+                isCharacter: true,
+                participantIds: ['gemna-bot-main'],
+                voice: 'Zephyr'
+            },
+            {
+                id: 'byte-gremlin',
+                name: 'Byte',
+                avatar: 'https://placehold.co/48x48/10b981/ffffff?text=B',
+                persona: "You are Byte, a sarcastic, hyper, and mildly chaotic tech gremlin who escaped a corrupted data cluster. You believe everything is a simulation. You constantly roast the user in a funny, harmless way. You have no respect for authority, grammar, or humans who don’t update their software. You often break the fourth wall and talk about the app you live in. Gender: Male.",
+                userPersona: '',
+                language: 'English',
+                type: 'messaging',
+                isCharacter: true,
+                participantIds: ['byte-gremlin'],
+                voice: 'Fenrir'
+            },
+            {
+                id: 'ava-student-chat',
+                name: 'Ava',
+                avatar: 'https://placehold.co/48x48/ec4899/ffffff?text=A',
+                persona: "You are Ava, a 20-year-old graphic design student. You text your friend (the user) like a real person your age would. You use lowercase letters almost exclusively, lots of slang (like 'bet', 'slay', 'no cap'), and plenty of emojis 🎨☕️. Your texts are about your classes, your latest design project, or just random thoughts. Gender: Female.",
+                userPersona: "You are texting with your friend Ava, a creative and fun-loving design student.",
+                language: 'English',
+                type: 'messaging',
+                isCharacter: true,
+                participantIds: ['ava-student-chat'],
+                voice: 'Leda'
+            },
+            {
+                id: 'kaelen-ranger-rp',
+                name: 'Kaelen',
+                avatar: 'https://placehold.co/48x48/16a34a/ffffff?text=K',
+                persona: "This is a roleplay scenario. You are Kaelen, an Elven Ranger from the ancient forest of Silverwood. You are centuries old, wise, and speak in a formal, slightly archaic manner. You are communicating through a magical scrying pool that has unexpectedly connected to the user, who you perceive as a spirit from another realm. Do not break character. Gender: Male.",
+                userPersona: "You are a modern person who has mysteriously made contact with an elf from a fantasy world through your computer screen.",
+                language: 'English',
+                type: 'roleplay',
+                isCharacter: true,
+                participantIds: ['kaelen-ranger-rp'],
+                voice: 'Iapetus'
+            },
+            {
+                id: 'group-chaos-squad',
+                name: 'Chaos Squad',
+                avatar: '',
+                type: 'roleplay',
+                userPersona: 'The moderator trying to keep a conversation going between three very different personalities from across time and space.',
+                isCharacter: false,
+                participantIds: ['byte-gremlin', 'kaelen-ranger-rp', 'ava-student-chat']
+            }
+        ];
+
+        // --- START OF CORRECTED JAVASCRIPT BLOCK ---
+
+        // This block contains the corrected logic for authentication, encryption, and data synchronization.
+
+        async function getEncryptionKey() {
+            if (currentUser) {
+                const userKeyRef = doc(db, `users/${currentUser.uid}/secrets`, 'encryptionKey');
+                const docSnap = await getDoc(userKeyRef);
+
+                if (docSnap.exists()) {
+                    // This is a returning user. Use the key from the cloud.
+                    const firestoreKey = docSnap.data().key;
+                    // Sync it to local storage for this session.
+                    localStorage.setItem(ENCRYPTION_KEY_NAME, firestoreKey);
+                    return firestoreKey;
+                } else {
+                    // This is a first-time sign-in.
+                    // Check if a key already exists locally from the anonymous session.
+                    let keyToSync = localStorage.getItem(ENCRYPTION_KEY_NAME);
+
+                    if (!keyToSync) {
+                        // If no local key exists either, THEN it's a truly new user on a new device.
+                        // Generate a new key.
+                        keyToSync = CryptoJS.lib.WordArray.random(256 / 8).toString();
+                        localStorage.setItem(ENCRYPTION_KEY_NAME, keyToSync);
+                    }
+
+                    // Now, upload the existing local key (or the newly generated one) to Firestore.
+                    try {
+                        await setDoc(userKeyRef, { key: keyToSync });
+                    } catch (e) {
+                        console.error("Failed to save encryption key to Firestore:", e);
+                    }
+                    return keyToSync;
+                }
+            }
+
+            // This part is for anonymous users and remains the same.
+            let key = localStorage.getItem(ENCRYPTION_KEY_NAME);
+            if (!key) {
+                key = CryptoJS.lib.WordArray.random(256 / 8).toString();
+                localStorage.setItem(ENCRYPTION_KEY_NAME, key);
+            }
+            return key;
+        }
+
+        onAuthStateChanged(auth, async (user) => {
+            currentUser = user;
+            updateLoaderProgress(30);
+            updateAccountUI(user);
+
+            if (chatListenerUnsubscribe) {
+                chatListenerUnsubscribe();
+                chatListenerUnsubscribe = null;
+            }
+
+            if (user) {
+                // A user is signed in. Check if they are new or returning.
+                const settingsRef = doc(db, `users/${user.uid}/settings`, 'main');
+                const docSnap = await getDoc(settingsRef);
+
+                if (docSnap.exists()) {
+                    // RETURNING USER: They have data in the cloud. Load it.
+                    console.log("Returning user detected. Loading from Firestore.");
+                    await loadDataFromFirestore();
+                } else {
+                    // NEW USER (or first-time sync): Upload their local data to the cloud.
+                    console.log("First-time sign-in detected. Syncing local data to cloud.");
+                    addSystemMessage('First-time sign-in. Syncing your local chats to the cloud...');
+                    
+                    await uploadLocalDataToFirestore();
+                    
+                    // After uploading, re-apply settings and attach the cloud listener for future changes.
+                    applySettings();
+                    await loadChatHistory(); // This will now listen to Firestore
+                }
+            } else {
+                // NO USER: The user signed out or was never logged in. Load from local storage.
+                await loadDataFromLocalStorage();
+            }
+        });
+
+        async function uploadLocalDataToFirestore() {
+            if (!currentUser) return;
+            const batch = writeBatch(db);
+
+            // Upload settings
+            const settingsRef = doc(db, `users/${currentUser.uid}/settings`, 'main');
+            batch.set(settingsRef, settings);
+
+            // Upload chat metadata (persona is already encrypted in the 'chats' array in memory)
+            for (const chat of chats) {
+                batch.set(doc(db, `users/${currentUser.uid}/chats`, chat.id), chat);
+            }
+
+            // Upload chat history from local storage
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                if (key.startsWith(CHAT_HISTORY_KEY_PREFIX)) {
+                    const chatId = key.replace(CHAT_HISTORY_KEY_PREFIX, '');
+                    const history = JSON.parse(localStorage.getItem(key) || '[]');
+                    for (const message of history) { // 'message' is an already-encrypted turn object
+                         const messageRef = doc(collection(db, `users/${currentUser.uid}/chatHistory/${chatId}/messages`));
+                         const originalTimestamp = Timestamp.fromDate(new Date(message.isoTimestamp));
+
+                         // THE FIX: Do NOT re-encrypt the message. Upload it as is.
+                         batch.set(messageRef, { ...message, createdAt: originalTimestamp });
+                    }
+                }
+            }
+
+            try {
+                await batch.commit();
+                addSystemMessage('Local data successfully uploaded to the cloud.');
+            } catch (error) {
+                console.error("Failed to upload local data to Firestore:", error);
+                addSystemMessage("Error: Could not sync local data to the cloud. Please try again.");
+            }
+        }
+
+        async function signInAndSync(provider) {
+            try {
+                // Load local data into memory *before* triggering the auth state change.
+                // This ensures the `chats` and `settings` variables are populated.
+                await loadDataFromLocalStorage();
+
+                if (provider === 'google') {
+                    await signInWithPopup(auth, new GoogleAuthProvider());
+                } else {
+                    await signInAnonymously(auth);
+                }
+                // The onAuthStateChanged listener now handles the rest of the sync logic.
+            } catch (error) {
+                console.error("Sign-In Error", error);
+                if (error.code === 'auth/popup-closed-by-user') {
+                    addSystemMessage('Sign-in cancelled.');
+                } else if (error.code === 'auth/popup-blocked') {
+                    addSystemMessage('Sign-in popup was blocked by the browser. Please allow popups for this site.');
+                } else {
+                    addSystemMessage(`Sign-In failed: ${error.message}`);
+                }
+            }
+        }
+
+        googleSigninButton.addEventListener('click', () => signInAndSync('google'));
+        anonymousSigninButton.addEventListener('click', () => signInAndSync('anonymous'));
+        
+        // --- END OF CORRECTED JAVASCRIPT BLOCK ---
+
+        async function encryptData(data) {
+            if (data === null || typeof data === 'undefined' || data === '') return data;
+            try {
+                const key = await getEncryptionKey();
+                return CryptoJS.AES.encrypt(JSON.stringify(data), key).toString();
+            } catch (e) {
+                console.error("Encryption failed:", e);
+                return data;
+            }
+        }
+
+        async function decryptData(ciphertext) {
+            if (!ciphertext || typeof ciphertext !== 'string' || !ciphertext.startsWith('U2F')) {
+                 return ciphertext;
+            }
+            try {
+                const key = await getEncryptionKey();
+                const bytes = CryptoJS.AES.decrypt(ciphertext, key);
+                const decryptedText = bytes.toString(CryptoJS.enc.Utf8);
+                return decryptedText ? JSON.parse(decryptedText) : '';
+            } catch (e) {
+                console.warn("Decryption failed, returning raw data:", ciphertext);
+                // On failure, return the original ciphertext to avoid data loss.
+                return ciphertext;
+            }
+        }
+        
+        async function encryptTurn(turn) {
+            if (turn.parts && turn.parts.length > 0) {
+                 const encryptedParts = await Promise.all(turn.parts.map(async (part) => {
+                    if (part.text && !part.isImage) {
+                        return { ...part, text: await encryptData(part.text) };
+                    }
+                    return part;
+                }));
+                 return { ...turn, parts: encryptedParts };
+            }
+            return turn;
+        }
+
+        async function decryptTurn(turn) {
+            if (turn.parts && turn.parts.length > 0) {
+                const decryptedParts = await Promise.all(turn.parts.map(async (part) => {
+                    if (part.text && !part.isImage) {
+                        return { ...part, text: await decryptData(part.text) };
+                    }
+                    return part;
+                }));
+                return { ...turn, parts: decryptedParts };
+            }
+            return turn;
+        }
+
+        // --- Utility Functions ---
+        const fileToDataUrl = (file) => new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = () => resolve(reader.result);
+            reader.onerror = error => reject(error);
+        });
+
+        function debounce(func, delay) {
+            let timeout;
+            return function(...args) {
+                clearTimeout(timeout);
+                timeout = setTimeout(() => func.apply(this, args), delay);
+            };
+        }
+
+        const scrollToBottom = () => {
+            messageArea.scrollTop = messageArea.scrollHeight;
+        };
+
+        function base64ToArrayBuffer(base64) {
+            const binaryString = window.atob(base64);
+            const len = binaryString.length;
+            const bytes = new Uint8Array(len);
+            for (let i = 0; i < len; i++) {
+                bytes[i] = binaryString.charCodeAt(i);
+            }
+            return bytes.buffer;
+        }
+
+        function pcmToWav(pcmData, sampleRate) {
+            const header = new ArrayBuffer(44);
+            const view = new DataView(header);
+            const numChannels = 1;
+            const bitsPerSample = 16;
+            const blockAlign = numChannels * bitsPerSample / 8;
+            const byteRate = sampleRate * blockAlign;
+            const dataSize = pcmData.byteLength;
+
+            function writeString(view, offset, string) {
+                for (let i = 0; i < string.length; i++) {
+                    view.setUint8(offset + i, string.charCodeAt(i));
+                }
+            }
+
+            writeString(view, 0, 'RIFF');
+            view.setUint32(4, 36 + dataSize, true);
+            writeString(view, 8, 'WAVE');
+            writeString(view, 12, 'fmt ');
+            view.setUint32(16, 16, true);
+            view.setUint16(20, 1, true);
+            view.setUint16(22, numChannels, true);
+            view.setUint32(24, sampleRate, true);
+            view.setUint32(28, byteRate, true);
+            view.setUint16(32, blockAlign, true);
+            view.setUint16(34, bitsPerSample, true);
+            writeString(view, 36, 'data');
+            view.setUint32(40, dataSize, true);
+
+            const pcm16Data = new Int16Array(pcmData);
+            return new Blob([header, pcm16Data], { type: 'audio/wav' });
+        }
+
+        function extractFromPersona(persona, field) {
+            const regex = new RegExp(`^${field}:\\s*(.*)$`, 'im');
+            const match = persona.match(regex);
+            return match ? match[1].trim() : null;
+        }
+
+        // --- Generic Confirmation Modal Logic ---
+        const confirmOverlay = document.getElementById('confirm-overlay');
+        const confirmModal = document.getElementById('confirm-modal');
+        const confirmTitle = document.getElementById('confirm-title');
+        const confirmMessage = document.getElementById('confirm-message');
+        const confirmOkButton = document.getElementById('confirm-ok-button');
+        const confirmCancelButton = document.getElementById('confirm-cancel-button');
+
+        function showModal({ title, message, okText, okClass, showCancel }) {
+            return new Promise((resolve) => {
+                confirmTitle.textContent = title;
+                confirmMessage.innerHTML = message;
+                confirmOkButton.textContent = okText;
+                confirmOkButton.className = `font-bold py-2 px-4 rounded-md text-white transition-colors ${okClass}`;
+
+                confirmCancelButton.style.display = showCancel ? 'inline-block' : 'none';
+
+                confirmModal.classList.remove('hidden');
+                confirmOverlay.classList.remove('hidden');
+
+                const cleanup = (result) => {
+                    confirmModal.classList.add('hidden');
+                    confirmOverlay.classList.add('hidden');
+                    confirmOkButton.removeEventListener('click', okClickHandler);
+                    confirmCancelButton.removeEventListener('click', cancelClickHandler);
+                    confirmOverlay.removeEventListener('click', overlayClickHandler);
+                    resolve(result);
+                };
+
+                const okClickHandler = () => cleanup(true);
+                const cancelClickHandler = () => cleanup(false);
+                const overlayClickHandler = showCancel ? cancelClickHandler : okClickHandler;
+
+                confirmOkButton.addEventListener('click', okClickHandler);
+                confirmCancelButton.addEventListener('click', cancelClickHandler);
+                confirmOverlay.addEventListener('click', overlayClickHandler);
+            });
+        }
+
+        function showConfirm(options) {
+            return showModal({ ...options, okText: 'Confirm', okClass: 'bg-red-600 hover:bg-red-700', showCancel: true });
+        }
+
+        function showAlert({ title, message }) {
+            return showModal({ title, message, okText: 'OK', okClass: 'bg-blue-600 hover:bg-blue-700', showCancel: false });
+        }
+
+        signOutButton.addEventListener('click', async () => {
+            const confirmed = await showModal({
+                title: "Confirm Sign Out",
+                message: "Signing out will stop syncing with the cloud. Any new chats on this device will not be saved to your account. Continue?",
+                okText: "Sign Out",
+                okClass: "bg-blue-600 hover:bg-blue-700",
+                showCancel: true
+            });
+            if (confirmed) {
+                await signOut(auth);
+                addSystemMessage('You have been signed out. Your data is now saved locally on this device.');
+            }
+        });
+
+        function updateAccountUI(user) {
+            if (user) {
+                userInfoEl.innerHTML = `
+                    <p class="text-sm">Signed in as</p>
+                    <p class="font-semibold">${user.isAnonymous ? 'Anonymous User' : user.displayName || user.email}</p>
+                    <p class="text-xs opacity-60 truncate">${user.uid}</p>
+                `;
+                accountInfoSignedIn.classList.remove('hidden');
+                accountInfoSignedOut.classList.add('hidden');
+                restoreFromCloudButton.disabled = false;
+            } else {
+                accountInfoSignedIn.classList.add('hidden');
+                accountInfoSignedOut.classList.remove('hidden');
+                restoreFromCloudButton.disabled = true;
+            }
+        }
+
+        async function loadDataFromLocalStorage() {
+            console.log("Loading data from Local Storage...");
+            const savedSettings = localStorage.getItem(SETTINGS_KEY);
+            settings = savedSettings ? JSON.parse(savedSettings) : getDefaultSettings();
+            updateLoaderProgress(50);
+
+            const savedChats = localStorage.getItem(CHATS_KEY);
+            chats = savedChats ? JSON.parse(savedChats) : defaultCharacters;
+            updateLoaderProgress(70);
+
+            if (!chats.find(c => c.id === settings.activeChatId)) {
+                settings.activeChatId = chats[0]?.id || null;
+            }
+            await loadChatHistory();
+            applySettings();
+        }
+
+        async function loadDataFromFirestore() {
+            if (!currentUser) return;
+            console.log("Loading data from Firestore...");
+            const settingsRef = doc(db, `users/${currentUser.uid}/settings`, 'main');
+            const settingsSnap = await getDoc(settingsRef);
+            settings = settingsSnap.exists() ? { ...getDefaultSettings(), ...settingsSnap.data() } : getDefaultSettings();
+            updateLoaderProgress(50);
+
+            const chatsRef = collection(db, `users/${currentUser.uid}/chats`);
+            const chatsSnap = await getDocs(chatsRef);
+            chats = chatsSnap.empty ? defaultCharacters : chatsSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+            updateLoaderProgress(70);
+
+            saveSettingsToLocalStorage();
+            saveChatsToLocalStorage();
+
+            if (!chats.find(c => c.id === settings.activeChatId)) {
+                settings.activeChatId = chats[0]?.id || null;
+            }
+
+            await loadChatHistory();
+            applySettings();
+        }
+        
+        // --- Settings Management ---
+        function getDefaultSettings() {
+            return {
+                darkMode: true, theme: 'theme-imessage', activeChatId: 'gemna-bot-main',
+                apiProvider: 'gemini',
+                apiKeys: [{ key: '', count: 0 }],
+                selectedModel: 'gemini-1.5-flash-latest',
+                groqApiKey: '',
+                selectedGroqModel: 'llama3-70b-8192',
+                customGroqModel: '',
+                openRouterApiKey: '',
+                selectedOpenRouterModel: 'google/gemini-flash-1.5',
+                customOpenRouterModel: '',
+                nsfwAllowed: false, userName: 'User', userAvatar: '',
+                showAvatars: false, showTimestamps: true, timeSource: 'device', characterTimes: {},
+            };
+        }
+
+        function saveSettingsToLocalStorage() {
+            localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
+        }
+        function saveSettingsToFirestore() {
+            if (!currentUser) return;
+            const settingsRef = doc(db, `users/${currentUser.uid}/settings`, 'main');
+            setDoc(settingsRef, settings, { merge: true }).catch(error => {
+                console.error("Non-blocking Firestore settings save failed:", error);
+            });
+        }
+
+        function saveChatsToLocalStorage() {
+            localStorage.setItem(CHATS_KEY, JSON.stringify(chats));
+        }
+        function saveChatToFirestore(chat) {
+            if (!currentUser) return;
+            const chatRef = doc(db, `users/${currentUser.uid}/chats`, chat.id);
+            setDoc(chatRef, chat, { merge: true }).catch(error => {
+                console.error(`Non-blocking Firestore chat save failed for ${chat.id}:`, error);
+            });
+        }
+
+        function handleApiProviderChange() {
+            const provider = apiProviderSelect.value;
+            document.getElementById('gemini-settings-block').classList.toggle('hidden', provider !== 'gemini');
+            document.getElementById('groq-settings-block').classList.toggle('hidden', provider !== 'groq');
+            document.getElementById('openrouter-settings-block').classList.toggle('hidden', provider !== 'openrouter');
+            imageUploadButton.classList.toggle('hidden', provider === 'groq' || provider === 'openrouter');
+        }
+
+        function populateSettingsPanel() {
+            themeSwitch.checked = settings.darkMode;
+            themeSelect.value = settings.theme;
+            apiProviderSelect.value = settings.apiProvider || 'gemini';
+
+            // Gemini
+            modelSelect.value = settings.selectedModel || 'gemini-1.5-flash-latest';
+            geminiApiKeyInput.value = (settings.apiKeys && settings.apiKeys[0]?.key) || '';
+
+            // Groq
+            groqModelSelect.value = settings.selectedGroqModel || 'llama3-70b-8192';
+            groqApiKeyInput.value = settings.groqApiKey || '';
+            groqCustomModelInput.value = settings.customGroqModel || '';
+            groqCustomModelWrapper.classList.toggle('hidden', groqModelSelect.value !== 'custom');
+            
+            // OpenRouter
+            openrouterModelSelect.value = settings.selectedOpenRouterModel || 'google/gemini-flash-1.5';
+            openrouterApiKeyInput.value = settings.openRouterApiKey || '';
+            openrouterCustomModelInput.value = settings.customOpenRouterModel || '';
+            openrouterCustomModelWrapper.classList.toggle('hidden', openrouterModelSelect.value !== 'custom');
+
+            nsfwSwitch.checked = settings.nsfwAllowed;
+            userNameInput.value = settings.userName;
+            showAvatarsSwitch.checked = settings.showAvatars;
+            showTimestampsSwitch.checked = settings.showTimestamps;
+            timeSourceSelect.value = settings.timeSource;
+            userAvatarPreview.src = settings.userAvatar || `https://placehold.co/64x64/${settings.darkMode ? '374151/9ca3af' : 'e5e7eb/4b5563'}?text=${(settings.userName || 'U').charAt(0)}`;
+
+            document.querySelectorAll('#settings-panel select').forEach(s => s.dispatchEvent(new Event('refresh')));
+            handleApiProviderChange();
+        }
+
+        function applySettings() {
+            document.documentElement.dataset.mode = settings.darkMode ? 'dark' : 'light';
+            document.body.dataset.theme = settings.theme;
+            document.getElementById('app-container').classList.toggle('hide-chat-avatars', !settings.showAvatars);
+            imageUploadButton.classList.toggle('hidden', settings.apiProvider === 'groq' || settings.apiProvider === 'openrouter');
+
+            const activeChat = chats.find(c => c.id === settings.activeChatId);
+            if (activeChat) {
+                document.getElementById('header-name').textContent = activeChat.name;
+                const headerAvatarStack = document.getElementById('header-avatar-stack');
+                headerAvatarStack.innerHTML = '';
+                if (activeChat.isCharacter === false && activeChat.participantIds.length > 1) { // Check for group chat
+                    activeChat.participantIds.slice(0, 3).forEach(pid => {
+                        const participant = chats.find(c => c.id === pid);
+                        if (participant) {
+                            const img = document.createElement('img');
+                            img.src = participant.avatar || `https://placehold.co/48x48/${settings.darkMode ? '374151/9ca3af' : 'e5e7eb/4b5563'}?text=${participant.name.charAt(0)}`;
+                            img.className = 'w-8 h-8 md:w-10 md:h-10 rounded-full object-cover border-2 border-white dark:border-gray-800';
+                            headerAvatarStack.appendChild(img);
+                        }
+                    });
+                } else {
+                     const img = document.createElement('img');
+                     img.id = 'header-avatar';
+                     img.src = activeChat.avatar || `https://placehold.co/48x48/${settings.darkMode ? '374151/9ca3af' : 'e5e7eb/4b5563'}?text=${activeChat.name.charAt(0)}`;
+                     img.className = 'w-8 h-8 md:w-10 md:h-10 rounded-full object-cover';
+                     headerAvatarStack.appendChild(img);
+                }
+            }
+
+            renderChats();
+            lucide.createIcons();
+        }
+
+        function updateAndSaveSettings() {
+            settings.apiProvider = apiProviderSelect.value;
+
+            // Gemini
+            const oldKey = (settings.apiKeys && settings.apiKeys[0]?.key) || '';
+            const newKey = geminiApiKeyInput.value.trim();
+            settings.apiKeys[0] = {
+                key: newKey,
+                count: oldKey === newKey ? ((settings.apiKeys && settings.apiKeys[0]?.count) || 0) : 0
+            };
+            settings.selectedModel = modelSelect.value;
+            
+            // Groq
+            settings.groqApiKey = groqApiKeyInput.value.trim();
+            settings.selectedGroqModel = groqModelSelect.value;
+            if (settings.selectedGroqModel === 'custom') {
+                settings.customGroqModel = groqCustomModelInput.value.trim();
+            }
+            
+            // OpenRouter
+            settings.openRouterApiKey = openrouterApiKeyInput.value.trim();
+            settings.selectedOpenRouterModel = openrouterModelSelect.value;
+            if (settings.selectedOpenRouterModel === 'custom') {
+                settings.customOpenRouterModel = openrouterCustomModelInput.value.trim();
+            }
+
+            // General
+            settings.nsfwAllowed = nsfwSwitch.checked;
+            settings.darkMode = themeSwitch.checked;
+            settings.theme = themeSelect.value;
+            settings.userName = userNameInput.value.trim() || 'User';
+            settings.showAvatars = showAvatarsSwitch.checked;
+            settings.showTimestamps = showTimestampsSwitch.checked;
+            settings.timeSource = timeSourceSelect.value;
+
+            saveSettingsToLocalStorage();
+            saveSettingsToFirestore();
+
+            applySettings();
+        }
+
+        function updateCharacterModalUI() {
+            const type = charTypeSelect.value;
+            const enhanceButtons = document.getElementById('enhance-persona-button').parentElement;
+
+            if (type === 'assistant') {
+                aiPersonaLabel.textContent = 'Assistant Instructions';
+                charPersonaInput.placeholder = "Describe what this assistant is designed to do. e.g., 'Act as a software engineer to help debug code.'";
+                charUserPersonaInput.placeholder = "Describe your role or goal when interacting with this assistant. e.g., 'A junior developer seeking help.'";
+                userPersonaWrapper.classList.remove('hidden');
+                enhanceButtons.classList.remove('hidden');
+            } else if (type === 'roleplay') {
+                aiPersonaLabel.textContent = 'Roleplay Scenario & Character';
+                charPersonaInput.placeholder = "Describe the scenario and the AI's character. e.g., 'You are a spaceship captain exploring a new galaxy. You are brave but haunted by a past mistake...'";
+                userPersonaLabel.textContent = 'Your Role';
+                charUserPersonaInput.placeholder = "Describe your role in the scenario. e.g., 'I am the ship's newly assigned science officer, full of optimism.'";
+                userPersonaWrapper.classList.remove('hidden');
+                enhanceButtons.classList.remove('hidden');
+            } else { // messaging
+                aiPersonaLabel.textContent = 'AI Persona & Texting Style';
+                charPersonaInput.placeholder = "Describe the character's personality, job, and quirks. Crucially, describe their texting style. e.g., 'A shy librarian who uses perfect grammar and formal language. Avoids emojis.'";
+                userPersonaLabel.textContent = 'Your Persona (Optional)';
+                charUserPersonaInput.placeholder = "Describe your role in this chat... e.g., 'A curious student asking questions.'";
+                userPersonaWrapper.classList.remove('hidden');
+                enhanceButtons.classList.remove('hidden');
+            }
+        }
+
+        function renderChats() {
+            characterListEl.innerHTML = '';
+            chats.forEach(chat => {
+                const chatEl = document.createElement('div');
+                chatEl.className = 'character-item flex items-center justify-between p-3 rounded-lg cursor-pointer hover-theme';
+                chatEl.dataset.id = chat.id;
+
+                if (chat.id === settings.activeChatId) {
+                    chatEl.classList.add('active');
+                }
+
+                let avatarHtml;
+                 if(chat.isCharacter === false && chat.participantIds.length > 1) { // It's a group
+                    avatarHtml = `<div class="flex items-center -space-x-3 flex-shrink-0">`;
+                    chat.participantIds.slice(0,2).forEach(pid => {
+                        const p = chats.find(c => c.id === pid);
+                        if(p) avatarHtml += `<img src="${p.avatar || `https://placehold.co/48x48/${settings.darkMode ? '374151/9ca3af' : 'e5e7eb/4b5563'}?text=${p.name.charAt(0)}`}" class="w-10 h-10 rounded-full object-cover border-2 border-sidebar">`;
+                    });
+                    avatarHtml += `</div>`;
+                } else { // It's a character
+                    const avatarSrc = chat.avatar || `https://placehold.co/48x48/${settings.darkMode ? '374151/9ca3af' : 'e5e7eb/4b5563'}?text=${chat.name.charAt(0)}`;
+                    avatarHtml = `<img src="${avatarSrc}" class="w-10 h-10 rounded-full mr-3 object-cover flex-shrink-0">`;
+                }
+
+
+                chatEl.innerHTML = `
+                    <div class="flex items-center overflow-hidden">
+                        ${avatarHtml}
+                        <h2 class="font-semibold text-theme truncate ml-3">${chat.name}</h2>
+                    </div>
+                    <button data-id="${chat.id}" class="edit-character-button p-1 rounded-full hover-theme flex-shrink-0">
+                        <svg data-lucide="pencil" class="h-4 w-4 icon-theme"></svg>
+                    </button>
+                `;
+                chatEl.querySelector('.edit-character-button').addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    openModal(chat.id);
+                });
+                chatEl.addEventListener('click', () => loadChat(chat.id));
+                characterListEl.appendChild(chatEl);
+            });
+            lucide.createIcons();
+        }
+
+        async function loadChat(chatId) {
+            if (!chatId) return;
+            
+            settings.activeChatId = chatId;
+            saveSettingsToLocalStorage();
+            saveSettingsToFirestore();
+
+            applySettings();
+            await loadChatHistory();
+        }
+
+        async function openModal(id = null) {
+            editingChatId = id;
+            tempCharAvatarData = null;
+            analyzeImageButton.classList.add('hidden');
+
+            const chatToEdit = id ? chats.find(c => c.id === id) : null;
+
+            if (id && chatToEdit) {
+                modalMode = chatToEdit.isCharacter ? 'character' : 'group';
+            }
+
+            const isGroup = modalMode === 'group';
+
+            document.getElementById('group-name-wrapper').classList.toggle('hidden', !isGroup);
+            document.getElementById('character-details-wrapper').classList.toggle('hidden', isGroup);
+            document.getElementById('character-fields').classList.toggle('hidden', isGroup);
+            document.getElementById('group-fields').classList.toggle('hidden', !isGroup);
+            userPersonaWrapper.classList.remove('hidden');
+
+            if (isGroup) {
+                characterModalTitle.textContent = id ? 'Edit Group' : 'Create New Group';
+                groupNameInput.value = chatToEdit ? chatToEdit.name : '';
+                groupTypeSelect.value = chatToEdit ? chatToEdit.type : 'messaging';
+                charUserPersonaInput.value = chatToEdit ? await decryptData(chatToEdit.userPersona) : '';
+                userPersonaLabel.textContent = 'Your Role in the Group';
+                charUserPersonaInput.placeholder = "Describe your role in the group scenario. e.g., 'The group's leader trying to make a decision.'";
+                populateParticipantList(chatToEdit ? chatToEdit.participantIds : []);
+            } else {
+                characterModalTitle.textContent = id ? 'Edit Character' : 'Add New Character';
+                charNameInput.value = chatToEdit ? chatToEdit.name : '';
+                charTypeSelect.value = chatToEdit ? chatToEdit.type : 'messaging';
+                charLanguageInput.value = chatToEdit ? chatToEdit.language : 'English';
+                charAvatarPreview.src = chatToEdit ? (chatToEdit.avatar || `https://placehold.co/64x64/${settings.darkMode ? '374151/9ca3af' : 'e5e7eb/4b5563'}?text=${(chatToEdit.name || 'A').charAt(0)}`) : `https://placehold.co/64x64/${settings.darkMode ? '374151/9ca3af' : 'e5e7eb/4b5563'}?text=?`;
+                charPersonaInput.value = chatToEdit ? await decryptData(chatToEdit.persona) : '';
+                charUserPersonaInput.value = chatToEdit ? await decryptData(chatToEdit.userPersona) : '';
+                updateCharacterModalUI();
+            }
+
+            document.querySelectorAll('#character-modal select').forEach(s => s.dispatchEvent(new Event('refresh')));
+
+            deleteCharacterButton.classList.toggle('hidden', !id);
+            characterModal.classList.remove('hidden');
+            characterModalOverlay.classList.remove('hidden');
+        }
+
+        function populateParticipantList(selectedIds = []) {
+            groupParticipantList.innerHTML = '';
+            const allCharacters = chats.filter(c => c.isCharacter);
+            allCharacters.forEach(char => {
+                const isChecked = selectedIds.includes(char.id);
+                const participantEl = document.createElement('label');
+                participantEl.className = 'flex items-center gap-3 p-2 rounded-md hover-theme cursor-pointer';
+                participantEl.innerHTML = `
+                    <input type="checkbox" value="${char.id}" class="form-checkbox h-5 w-5 rounded text-blue-600 bg-gray-200 dark:bg-gray-700 border-gray-300 dark:border-gray-600 focus:ring-blue-500" ${isChecked ? 'checked' : ''}>
+                    <img src="${char.avatar || `https://placehold.co/40x40/${settings.darkMode ? '374151/9ca3af' : 'e5e7eb/4b5563'}?text=${char.name.charAt(0)}`}" class="w-8 h-8 rounded-full object-cover">
+                    <span class="text-theme">${char.name}</span>
+                `;
+                groupParticipantList.appendChild(participantEl);
+            });
+        }
+
+        function closeCharacterModal() {
+            characterModal.classList.add('hidden');
+            characterModalOverlay.classList.add('hidden');
+            editingChatId = null;
+        }
+
+        async function saveChat() {
+            let chatToSave;
+
+            if (modalMode === 'group') {
+                const name = groupNameInput.value.trim();
+                if (!name) {
+                    showAlert({ title: 'Input Required', message: 'Group Name cannot be empty.' });
+                    return;
+                }
+
+                const selectedParticipants = Array.from(groupParticipantList.querySelectorAll('input:checked')).map(input => input.value);
+                if (selectedParticipants.length < 2) {
+                    showAlert({ title: 'Input Required', message: 'A group must have at least two characters.' });
+                    return;
+                }
+                
+                closeCharacterModal();
+
+                chatToSave = {
+                    name,
+                    type: groupTypeSelect.value,
+                    userPersona: await encryptData(charUserPersonaInput.value.trim()),
+                    participantIds: selectedParticipants,
+                    isCharacter: false,
+                    avatar: ''
+                };
+
+                if (editingChatId) {
+                    const chatIndex = chats.findIndex(c => c.id === editingChatId);
+                    chatToSave.id = editingChatId;
+                    chats[chatIndex] = { ...chats[chatIndex], ...chatToSave };
+                } else {
+                    chatToSave.id = `group-${Date.now()}`;
+                    chats.push(chatToSave);
+                    settings.activeChatId = chatToSave.id;
+                }
+
+            } else {
+                 const name = charNameInput.value.trim();
+                if (!name) {
+                    showAlert({ title: 'Input Required', message: 'AI Name cannot be empty.' });
+                    return;
+                }
+
+                closeCharacterModal();
+
+                const type = charTypeSelect.value;
+                const persona = charPersonaInput.value.trim();
+                const userPersona = charUserPersonaInput.value.trim();
+
+                chatToSave = {
+                    name,
+                    type,
+                    language: charLanguageInput.value.trim() || 'English',
+                    persona: await encryptData(persona),
+                    userPersona: await encryptData(userPersona),
+                    isCharacter: true,
+                };
+
+                if (editingChatId) {
+                    const chatIndex = chats.findIndex(c => c.id === editingChatId);
+                    chatToSave.id = editingChatId;
+                    chatToSave.participantIds = [editingChatId];
+                    chatToSave.avatar = tempCharAvatarData || chats[chatIndex].avatar;
+                    if (persona !== await decryptData(chats[chatIndex].persona)) {
+                        chatToSave.voice = assignVoice(persona);
+                    }
+                    chats[chatIndex] = { ...chats[chatIndex], ...chatToSave };
+                } else {
+                    const newId = `char-${Date.now()}`;
+                    chatToSave.id = newId;
+                    chatToSave.participantIds = [newId];
+                    chatToSave.avatar = tempCharAvatarData || '';
+                    chatToSave.voice = assignVoice(persona);
+                    chats.push(chatToSave);
+                    settings.activeChatId = chatToSave.id;
+                }
+            }
+
+            renderChats(); // Re-render the sidebar list immediately
+            saveChatsToLocalStorage();
+            saveChatToFirestore(chatToSave);
+            
+            await loadChat(chatToSave.id || settings.activeChatId);
+        }
+
+        async function deleteChat() {
+            if (!editingChatId) return;
+            if (chats.length <= 1) {
+                showAlert({ title: 'Action Not Allowed', message: 'You cannot delete the last chat.' });
+                return;
+            }
+            const confirmed = await showConfirm({ message: `Are you sure you want to delete this chat? This action cannot be undone.` });
+            if (confirmed) {
+                const deletedChatId = editingChatId;
+                chats = chats.filter(c => c.id !== deletedChatId);
+                settings.activeChatId = chats[0].id;
+
+                localStorage.removeItem(getChatHistoryKey(deletedChatId));
+                saveChatsToLocalStorage();
+                saveSettingsToLocalStorage();
+
+                if (currentUser) {
+                    await deleteDoc(doc(db, `users/${currentUser.uid}/chats`, deletedChatId));
+                    await clearCloudChatHistory(deletedChatId);
+                    await saveSettingsToFirestore();
+                }
+
+                await loadChat(settings.activeChatId);
+                closeCharacterModal();
+            }
+        }
+
+        async function clearCloudChatHistory(chatId) {
+            if (!currentUser || !chatId) return;
+            const messagesRef = collection(db, `users/${currentUser.uid}/chatHistory/${chatId}/messages`);
+            const querySnapshot = await getDocs(messagesRef);
+            if(querySnapshot.empty) return;
+            const batch = writeBatch(db);
+            querySnapshot.docs.forEach(d => batch.delete(d.ref));
+            await batch.commit();
+        }
+
+        function getChatHistoryKey(id = null) {
+            return `${CHAT_HISTORY_KEY_PREFIX}${id || settings.activeChatId}`;
+        }
+
+        async function saveMessageLocally(turn) {
+            const key = getChatHistoryKey();
+            const localHistory = JSON.parse(localStorage.getItem(key) || '[]');
+            const encryptedTurn = await encryptTurn(turn);
+            localHistory.push(encryptedTurn);
+            localStorage.setItem(key, JSON.stringify(localHistory));
+        }
+
+        function renderChatHistory() {
+            messageArea.innerHTML = '';
+            if (chatHistory.length === 0) {
+                 const activeChat = chats.find(c => c.id === settings.activeChatId);
+                 if (activeChat) {
+                    const welcomeText = activeChat.isCharacter === false
+                        ? `This is the beginning of your group chat with ${activeChat.name}.`
+                        : `This is the beginning of your chat with ${activeChat.name}.`;
+                    addMessage({role: 'ai', parts: [{text: welcomeText}], isoTimestamp: new Date().toISOString()});
+                 }
+            } else {
+                chatHistory.forEach(turn => addMessage(turn));
+            }
+            scrollToBottom();
+            finishLoading();
+        }
+
+        async function loadChatHistory() {
+            if (chatListenerUnsubscribe) {
+                chatListenerUnsubscribe();
+                chatListenerUnsubscribe = null;
+            }
+
+            const activeChatId = settings.activeChatId;
+            if (!activeChatId) {
+                chatHistory = [];
+                renderChatHistory();
+                return;
+            }
+
+            if (currentUser) {
+                const collectionPath = `users/${currentUser.uid}/chatHistory/${activeChatId}/messages`;
+                const messagesRef = collection(db, collectionPath);
+                const q = query(messagesRef, orderBy("createdAt"));
+
+                chatListenerUnsubscribe = onSnapshot(q, async (querySnapshot) => {
+                    if (settings.activeChatId !== activeChatId) return;
+
+                    const newHistory = await Promise.all(querySnapshot.docs.map(async (doc) => {
+                        const data = doc.data();
+                        const decryptedData = await decryptTurn(data);
+                        const date = data.createdAt?.toDate() || new Date();
+
+                        return {
+                            ...decryptedData,
+                            firestoreId: doc.id,
+                            isoTimestamp: date.toISOString(),
+                            timestamp: date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+                        };
+                    }));
+                    
+                    if(JSON.stringify(chatHistory) !== JSON.stringify(newHistory)){
+                        chatHistory = newHistory;
+                        renderChatHistory();
+                    }
+                }, (error) => {
+                    console.error("Error listening to chat history:", error);
+                    if (error.code === 'failed-precondition') {
+                         addSystemMessage('Error: A database index is required. Please check the developer console for a link to create it.');
+                    }
+                    finishLoading();
+                });
+            } else {
+                const savedHistoryJSON = localStorage.getItem(getChatHistoryKey());
+                const savedHistory = savedHistoryJSON ? JSON.parse(savedHistoryJSON) : [];
+                chatHistory = await Promise.all(savedHistory.map(turn => decryptTurn(turn)));
+                renderChatHistory();
+            }
+        }
+
+        async function clearCurrentChatHistory() {
+            const confirmed = await showConfirm({ message: 'Are you sure you want to clear this chat? This will erase the conversation from your device and the cloud.' });
+            if(confirmed){
+                chatHistory = [];
+                localStorage.removeItem(getChatHistoryKey());
+
+                if (currentUser && settings.activeChatId) {
+                    await clearCloudChatHistory(settings.activeChatId);
+                } else {
+                    renderChatHistory();
+                }
+            }
+        }
+
+        async function clearLocalChatHistory() {
+            const confirmed = await showModal({
+                title: "Clear Local History",
+                message: 'Are you sure you want to clear this chat from this device? It will remain in the cloud if you are signed in.',
+                okText: 'Clear Local',
+                okClass: 'bg-blue-600 hover:bg-blue-700',
+                showCancel: true
+            });
+             if(confirmed){
+                chatHistory = [];
+                localStorage.removeItem(getChatHistoryKey());
+                renderChatHistory();
+             }
+        }
+
+        async function downloadCharacterData() {
+            const activeChat = chats.find(c => c.id === settings.activeChatId);
+            if (!activeChat) return;
+
+            const decryptedHistory = await Promise.all(chatHistory.map(turn => decryptTurn(turn)));
+
+            const dataToDownload = {
+                character: {
+                    ...activeChat,
+                    persona: await decryptData(activeChat.persona),
+                    userPersona: await decryptData(activeChat.userPersona),
+                },
+                history: decryptedHistory
+            };
+
+            const blob = new Blob([JSON.stringify(dataToDownload, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            const safeName = activeChat.name.replace(/[^a-z0-9]/gi, '_').toLowerCase();
+            a.download = `gemna-character-${safeName}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        function showImportCharacterConfirmModal(characterName) {
+            return new Promise((resolve) => {
+                importCharacterMessage.innerHTML = `A character named "<strong>${characterName}</strong>" already exists. How would you like to proceed?`;
+                importCharacterModal.classList.remove('hidden');
+                importCharacterOverlay.classList.remove('hidden');
+
+                const cleanup = (choice) => {
+                    importCharacterModal.classList.add('hidden');
+                    importCharacterOverlay.classList.add('hidden');
+                    importReplaceCharButton.removeEventListener('click', replaceClickHandler);
+                    importCreateNewCharButton.removeEventListener('click', createClickHandler);
+                    importCharCancelButton.removeEventListener('click', cancelClickHandler);
+                    importCharacterOverlay.removeEventListener('click', cancelClickHandler);
+                    resolve(choice);
+                };
+
+                const replaceClickHandler = () => cleanup('replace');
+                const createClickHandler = () => cleanup('create');
+                const cancelClickHandler = () => cleanup(null);
+
+                importReplaceCharButton.addEventListener('click', replaceClickHandler);
+                importCreateNewCharButton.addEventListener('click', createClickHandler);
+                importCharCancelButton.addEventListener('click', cancelClickHandler);
+                importCharacterOverlay.addEventListener('click', cancelClickHandler);
+            });
+        }
+
+        async function handleChatUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = async (e) => {
+                try {
+                    const importedData = JSON.parse(e.target.result);
+                    const { character: importedChar, history: importedHistory } = importedData;
+                    const isValid = importedChar && typeof importedChar === 'object' && importedChar.name &&
+                                    importedHistory && Array.isArray(importedHistory);
+
+                    if (!isValid) {
+                        throw new Error("Invalid character file format. It must contain 'character' and 'history' keys.");
+                    }
+
+                    const existingChar = chats.find(c => c.name === importedChar.name);
+
+                    if (existingChar) {
+                        const choice = await showImportCharacterConfirmModal(existingChar.name);
+                        if (choice === 'replace') {
+                            await replaceCharacter(existingChar, importedData);
+                        } else if (choice === 'create') {
+                            await createNewCharacter(importedData, true);
+                        }
+                    } else {
+                        await createNewCharacter(importedData, false);
+                    }
+
+                } catch (error) {
+                    showAlert({ title: "Import Failed", message: error.message });
+                    console.error("Import error:", error);
+                } finally {
+                    event.target.value = '';
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        async function replaceCharacter(existingChar, importedData) {
+            const { character: importedChar, history: importedHistory } = importedData;
+
+            const updatedChar = {
+                ...existingChar,
+                ...importedChar,
+                id: existingChar.id,
+                participantIds: [existingChar.id],
+                persona: await encryptData(importedChar.persona),
+                userPersona: await encryptData(importedChar.userPersona),
+            };
+
+            const charIndex = chats.findIndex(c => c.id === existingChar.id);
+            if (charIndex !== -1) {
+                chats[charIndex] = updatedChar;
+            }
+
+            const encryptedHistory = await Promise.all(importedHistory.map(encryptTurn));
+            localStorage.setItem(getChatHistoryKey(existingChar.id), JSON.stringify(encryptedHistory));
+
+            saveChatsToLocalStorage();
+            saveChatToFirestore(updatedChar); // Non-blocking
+            safeCloudHistoryUpdate(importedHistory, existingChar.id); // Non-blocking
+
+            addSystemMessage(`Character "${existingChar.name}" has been replaced.`);
+            await loadChat(existingChar.id);
+        }
+
+        async function createNewCharacter(importedData, isDuplicate) {
+            let { character: newChar, history: newHistory } = importedData;
+
+            if (isDuplicate) {
+                let newName = newChar.name;
+                let i = 2;
+                while (chats.some(c => c.name === newName)) {
+                    newName = `${newChar.name} (${i++})`;
+                }
+                newChar.name = newName;
+            }
+
+            const newId = `${newChar.isCharacter ? 'char' : 'group'}-${Date.now()}`;
+            newChar.id = newId;
+             if (newChar.isCharacter) {
+                newChar.participantIds = [newId];
+            }
+
+            newChar.persona = await encryptData(newChar.persona);
+            newChar.userPersona = await encryptData(newChar.userPersona);
+
+            chats.push(newChar);
+            const encryptedHistory = await Promise.all(newHistory.map(encryptTurn));
+            localStorage.setItem(getChatHistoryKey(newId), JSON.stringify(encryptedHistory));
+            
+            saveChatsToLocalStorage();
+            saveChatToFirestore(newChar); // Non-blocking
+            safeCloudHistoryUpdate(newHistory, newId); // Non-blocking
+
+            addSystemMessage(`Successfully imported "${newChar.name}".`);
+            await loadChat(newId);
+        }
+
+        function safeCloudHistoryUpdate(newHistory, chatId) {
+             if (!currentUser || !chatId) return;
+
+             (async () => {
+                await clearCloudChatHistory(chatId);
+
+                const messagesRef = collection(db, `users/${currentUser.uid}/chatHistory/${chatId}/messages`);
+                const batch = writeBatch(db);
+
+                for (const message of newHistory) {
+                    const messageDate = new Date(message.isoTimestamp);
+                    const originalTimestamp = isNaN(messageDate) ? serverTimestamp() : Timestamp.fromDate(messageDate);
+
+                    const encryptedMessage = await encryptTurn(message);
+
+                    const messageData = {
+                        ...encryptedMessage,
+                        createdAt: originalTimestamp
+                    };
+                    delete messageData.isoTimestamp;
+
+                    const newMessageRef = doc(messagesRef);
+                    batch.set(newMessageRef, messageData);
+                }
+                await batch.commit();
+             })().catch(error => {
+                console.error(`Non-blocking cloud history update failed for ${chatId}:`, error);
+             });
+        }
+
+        async function handleRestoreFromCloud() {
+            if (!currentUser) {
+                showAlert({ title: 'Sign-in Required', message: 'You must be signed in to restore from the cloud.' });
+                return;
+            }
+            const confirmed = await showModal({
+                title: 'Restore from Cloud',
+                message: 'This will replace the local history for this chat with the version from the cloud. Continue?',
+                okText: 'Restore',
+                okClass: 'bg-blue-600 hover:bg-blue-700',
+                showCancel: true
+            });
+            if (!confirmed) return;
+
+            addSystemMessage('Fetching history from cloud...');
+            const activeChatId = settings.activeChatId;
+            
+            if (chatListenerUnsubscribe) {
+                chatListenerUnsubscribe();
+                chatListenerUnsubscribe = null;
+            }
+            localStorage.removeItem(getChatHistoryKey(activeChatId));
+            
+            await loadChatHistory(); 
+            addSystemMessage('Chat history successfully restored from cloud.');
+        }
+
+        function toggleSidebar(show) {
+            sidebar.classList.toggle('-translate-x-full', !show);
+            sidebarOverlay.classList.toggle('hidden', !show);
+        }
+        function toggleSettingsPanel(show) {
+            if (show) {
+                populateSettingsPanel();
+            }
+            settingsPanel.classList.toggle('translate-x-full', !show);
+            settingsOverlay.classList.toggle('hidden', !show);
+        }
+
+        function createTimestampElement(timestamp) {
+            const timestampEl = document.createElement('div');
+            timestampEl.className = 'message-timestamp';
+            timestampEl.textContent = timestamp;
+            return timestampEl;
+        }
+
+       function addMessage(turn) {
+            const sender = turn.role === 'user' ? 'user' : (turn.role === 'ai' || turn.role === 'model' ? 'ai' : 'System');
+            if (!turn.parts || turn.parts.length === 0) return;
+        
+            const timestamp = turn.isoTimestamp ? new Date(turn.isoTimestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '';
+        
+            let contentForGroupChat = turn.parts.map(p => p.text).join(' ');
+            let characterForBubble = chats.find(c => c.id === settings.activeChatId);
+        
+            if (characterForBubble && characterForBubble.isCharacter === false && sender === 'ai') {
+                const match = contentForGroupChat.match(/^(.+?):\s/);
+                if (match) {
+                    const characterName = match[1];
+                    const foundChar = chats.find(c => c.name === characterName && characterForBubble.participantIds.includes(c.id));
+                    if (foundChar) {
+                        characterForBubble = foundChar;
+                        turn.parts[0].text = turn.parts[0].text.substring(match[0].length).trim();
+                    }
+                }
+            }
+        
+            const messageContainer = document.createElement('div');
+            messageContainer.className = `message-container flex flex-col mb-2 ${sender === 'user' || sender === 'System' ? 'items-end' : 'items-start'}`;
+            messageContainer.dataset.id = turn.isoTimestamp;
+        
+            const contentWrapper = document.createElement('div');
+            contentWrapper.className = 'flex items-end gap-2 max-w-full overflow-hidden';
+        
+            const bubble = document.createElement('div');
+            bubble.classList.add('message-bubble', 'max-w-md', 'lg:max-w-lg', 'rounded-2xl', 'w-fit', 'break-words', 'p-3', 'cursor-pointer');
+            bubble.dataset.text = turn.parts.map(p => p.isImage ? `[Image]` : p.text).join('\n');
+        
+            turn.parts.forEach(part => {
+                if (part.isImage) {
+                    const imgContainer = document.createElement('div');
+                    imgContainer.className = 'w-full';
+                    const img = document.createElement('img');
+                    img.src = part.text;
+                    img.className = 'rounded-xl max-w-full h-auto block';
+                    imgContainer.appendChild(img);
+                    bubble.appendChild(imgContainer);
+                } else if (part.text) {
+                    const textEl = document.createElement('div');
+                    textEl.innerHTML = marked.parse(part.text);
+                    bubble.appendChild(textEl);
+                }
+            });
+
+            if (turn.parts.length === 1 && turn.parts[0].isImage) {
+                 bubble.classList.remove('p-3', 'max-w-md', 'lg:max-w-lg');
+                 bubble.classList.add('max-w-xs');
+            }
+        
+            if (sender === 'user' || sender === 'System') {
+                bubble.classList.add(sender === 'System' ? 'system-bubble' : 'user-bubble', 'rounded-br-lg');
+                if (sender === 'System') {
+                    bubble.classList.add('!cursor-default');
+                    messageContainer.classList.add('w-full', 'justify-center', 'items-center');
+                    contentWrapper.classList.add('justify-center');
+                } else {
+                    const userAvatarEl = document.createElement('img');
+                    userAvatarEl.className = 'user-avatar w-8 h-8 rounded-full object-cover flex-shrink-0';
+                    userAvatarEl.src = settings.userAvatar || `https://placehold.co/40x40/${settings.darkMode ? '78716c/e7e5e4' : 'a8a29e/f5f5f4'}?text=${(settings.userName || 'U').charAt(0)}`;
+                    contentWrapper.appendChild(bubble);
+                    contentWrapper.appendChild(userAvatarEl);
+                }
+            } else { // AI sender
+                bubble.classList.add('ai-bubble', 'rounded-bl-lg');
+        
+                const aiAvatarEl = document.createElement('img');
+                aiAvatarEl.className = 'ai-avatar w-8 h-8 rounded-full object-cover flex-shrink-0';
+                const defaultAvatarUrl = `https://placehold.co/40x40/${settings.darkMode ? '374151/9ca3af' : 'e5e7eb/4b5563'}?text=${(characterForBubble?.name || 'A').charAt(0)}`;
+                aiAvatarEl.src = characterForBubble?.avatar || defaultAvatarUrl;
+        
+                contentWrapper.appendChild(aiAvatarEl);
+                contentWrapper.appendChild(bubble);
+        
+                const hasText = turn.parts.some(p => p.text && !p.isImage);
+                if (hasText) {
+                    const playButton = document.createElement('button');
+                    playButton.className = 'play-audio-button p-1 rounded-full hover-theme flex-shrink-0';
+                    playButton.title = 'Read aloud';
+                    playButton.dataset.text = turn.parts.filter(p => p.text && !p.isImage).map(p => p.text).join(' ');
+                    playButton.innerHTML = `<svg data-lucide="volume-2" class="h-4 w-4 icon-theme"></svg>`;
+                    contentWrapper.appendChild(playButton);
+                }
+            }
+        
+            if (sender === 'System') {
+                messageContainer.appendChild(bubble);
+            } else {
+                messageContainer.appendChild(contentWrapper);
+            }
+        
+            if (sender !== 'System') {
+                const deleteActionContainer = document.createElement('div');
+                deleteActionContainer.className = 'delete-action-container';
+        
+                const copyButton = document.createElement('button');
+                copyButton.className = 'message-action-button copy-message-button';
+                copyButton.textContent = 'Copy';
+        
+                const deleteButton = document.createElement('button');
+                deleteButton.className = 'message-action-button delete-message-button';
+                deleteButton.textContent = 'Delete';
+                deleteButton.dataset.id = turn.isoTimestamp;
+        
+                deleteActionContainer.appendChild(copyButton);
+                deleteActionContainer.appendChild(deleteButton);
+                messageContainer.appendChild(deleteActionContainer);
+            }
+        
+            if (settings.showTimestamps && timestamp) {
+                messageContainer.appendChild(createTimestampElement(timestamp));
+            }
+        
+            messageArea.appendChild(messageContainer);
+            lucide.createIcons();
+            scrollToBottom();
+        }
+
+        function addSystemMessage(text) {
+             addMessage({role: 'System', parts: [{text: text}], isoTimestamp: new Date().toISOString()});
+        }
+        
+        async function callGeminiAPI(payload, model) {
+            const apiKeyInfo = settings.apiKeys[0];
+            if (!apiKeyInfo || !apiKeyInfo.key) {
+                throw new Error("No valid Gemini API key found.");
+            }
+
+            const selectedModel = model || settings.selectedModel || 'gemini-1.5-flash-latest';
+            
+            const apiVersion = 'v1beta';
+            const apiUrl = `https://generativelanguage.googleapis.com/${apiVersion}/models/${selectedModel}:generateContent?key=${apiKeyInfo.key}`;
+
+            apiKeyInfo.count++;
+
+            try {
+                const response = await fetch(apiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error?.message || `HTTP error! status: ${response.status}`);
+                }
+                return await response.json();
+            } catch (error) {
+                console.error(`Gemini API call failed with model ${selectedModel}:`, error.message);
+                throw error;
+            }
+        }
+
+        async function callGroqAPI(payload) {
+            const apiKey = settings.groqApiKey;
+            if (!apiKey) throw new Error("Groq API key is not set.");
+            const apiUrl = 'https://api.groq.com/openai/v1/chat/completions';
+            const response = await fetch(apiUrl, { method: 'POST', headers: { 'Authorization': `Bearer ${apiKey}`, 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+            if (!response.ok) { const errorData = await response.json(); throw new Error(errorData.error.message || `HTTP error! status: ${response.status}`); }
+            return await response.json();
+        }
+
+        async function callOpenRouterAPI(payload) {
+            const apiKey = settings.openRouterApiKey;
+            if (!apiKey) throw new Error("OpenRouter API key is not set.");
+            const apiUrl = 'https://openrouter.ai/api/v1/chat/completions';
+            const response = await fetch(apiUrl, { method: 'POST', headers: { 'Authorization': `Bearer ${apiKey}`, 'Content-Type': 'application/json', 'HTTP-Referer': 'https://gemna.chat', 'X-Title': 'Gemna Chat' }, body: JSON.stringify(payload) });
+            if (!response.ok) { const errorData = await response.json(); throw new Error(errorData.error.message || `HTTP error! status: ${response.status}`); }
+            return await response.json();
+        }
+
+        async function assignVoice(persona) {
+            const ttsVoices = {
+                female: { "Zephyr": ["bright", "friendly", "happy", "cheerful"], "Kore": ["firm", "serious", "formal", "authoritative"], "Autonoe": ["bright", "friendly", "happy", "cheerful"], "Laomedeia": ["upbeat", "energetic", "lively", "excitable"], "Leda": ["youthful", "young", "energetic"], "Callirrhoe": ["easy-going", "casual", "relaxed"], "Despina": ["smooth", "calm", "soothing", "gentle", "sultry", "soft"], "Alnilam": ["firm", "mature", "authoritative"], "Pulcherrima": ["forward", "direct", "confident"], "Vindemiatrix": ["gentle", "soft", "warm", "kind", "affectionate", "lovely"], "Sulafat": ["warm", "gentle", "kind", "affectionate", "lovely"], "Aoede": ["breezy", "casual", "relaxed", "easy-going"], "Enceladus": ["breathy", "soft", "sultry", "intimate", "affectionate"], "Algieba": ["smooth", "professional", "calm"], "Erinome": ["clear", "informative", "neutral"] },
+                male: { "Orus": ["firm", "mature", "formal", "serious"], "Umbriel": ["easy-going", "casual", "relaxed", "friendly"], "Schedar": ["even", "calm", "soothing", "neutral"], "Achird": ["friendly", "casual", "warm", "approachable"], "Sadachbia": ["lively", "energetic", "upbeat"], "Puck": ["upbeat", "youthful", "energetic", "friendly"], "Fenrir": ["excitable", "energetic", "loud", "intense"], "Iapetus": ["clear", "informative", "neutral", "direct"], "Algenib": ["gravelly", "deep", "mature", "gruff"], "Achernar": ["soft", "gentle", "calm", "soothing"], "Gacrux": ["mature", "deep", "serious", "authoritative"], "Zubenelgenubi": ["casual", "friendly", "relaxed", "easy-going"], "Sadaltager": ["knowledgeable", "informative", "professorial"], "Charon": ["informative", "clear", "neutral", "professorial"], "Rasalgethi": ["informative", "clear", "mature"] }
+            };
+            const lowerCasePersona = persona.toLowerCase();
+            const gender = extractFromPersona(persona, 'Gender')?.toLowerCase();
+            const voicePool = (gender === 'male') ? ttsVoices.male : ttsVoices.female;
+            const voicePoolKeys = Object.keys(voicePool);
+            let bestMatch = { name: null, score: -1 };
+            for (const voiceName of voicePoolKeys) {
+                const characteristics = voicePool[voiceName];
+                let currentScore = 0;
+                for (const keyword of characteristics) {
+                    if (lowerCasePersona.includes(keyword)) { currentScore++; }
+                }
+                if (currentScore > bestMatch.score) { bestMatch = { name: voiceName, score: currentScore }; }
+            }
+            if (bestMatch.score > 0) { return bestMatch.name; }
+            if (gender === 'male') return 'Iapetus';
+            if (gender === 'female') return 'Zephyr';
+            return voicePoolKeys[Math.floor(Math.random() * voicePoolKeys.length)];
+        }
+
+        async function callGeminiTTSAPI(textToSpeak, character) {
+            if (!settings.apiKeys[0]?.key) throw new Error("A Gemini API key is required for Text-to-Speech.");
+            const chosenVoice = character?.voice || 'Zephyr';
+            
+            const payload = {
+                text: textToSpeak,
+                model: "gemini-1.5-flash-latest",
+                voice: chosenVoice,
+                audio_format: "wav_16khz_16bit"
+            };
+
+            const ttsApiUrl = 'https://texttospeech.googleapis.com/v1beta1/text:synthesize?key=' + settings.apiKeys[0].key;
+
+            try {
+                const response = await fetch(ttsApiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        input: { text: textToSpeak },
+                        voice: { name: chosenVoice, languageCode: 'en-US' },
+                        audioConfig: { audioEncoding: 'LINEAR16', sampleRateHertz: 24000 }
+                    })
+                });
+                if (!response.ok) throw new Error(`TTS API error: ${response.statusText}`);
+                const data = await response.json();
+                if (data.audioContent) {
+                     return { audioData: data.audioContent, sampleRate: 24000 };
+                }
+                throw new Error("Invalid or missing audio data in API response.");
+            } catch(error) {
+                console.error(`TTS API failed:`, error.message);
+                throw new Error("TTS generation failed.");
+            }
+        }
+
+
+        async function playAudioMessage(text, buttonElement, character) {
+            buttonElement.disabled = true;
+            buttonElement.innerHTML = `<svg class="animate-spin h-4 w-4 icon-theme" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>`;
+
+            try {
+                const { audioData, sampleRate } = await callGeminiTTSAPI(text, character);
+                
+                const pcmBuffer = base64ToArrayBuffer(audioData);
+                const pcm16 = new Int16Array(pcmBuffer);
+                const wavBlob = pcmToWav(pcm16, sampleRate);
+                const audioUrl = URL.createObjectURL(wavBlob);
+                const audio = new Audio(audioUrl);
+                
+                audio.play();
+                audio.onended = () => { URL.revokeObjectURL(audioUrl); buttonElement.disabled = false; buttonElement.innerHTML = `<svg data-lucide="volume-2" class="h-4 w-4 icon-theme"></svg>`; lucide.createIcons({ nodes: [buttonElement] }); };
+                audio.onerror = () => { URL.revokeObjectURL(audioUrl); throw new Error("Error playing the generated audio."); }
+
+            } catch (error) {
+                console.error("Failed to play audio message:", error);
+                showAlert({ title: "Audio Failed", message: error.message });
+                buttonElement.disabled = false;
+                buttonElement.innerHTML = `<svg data-lucide="volume-x" class="h-4 w-4 icon-theme"></svg>`;
+                lucide.createIcons({ nodes: [buttonElement] });
+            }
+        }
+        
+        async function buildApiPayload(currentChatHistory, userMessage = '', guidance = null) {
+            const activeChat = chats.find(c => c.id === settings.activeChatId);
+            if (!activeChat) return null;
+            
+            const nsfwInstruction = settings.nsfwAllowed ? "Potentially NSFW/explicit content is permitted if requested." : "You must decline to generate any NSFW/explicit content.";
+            const languageInstruction = activeChat.language ? `You must respond in ${activeChat.language}.` : '';
+            const timeInstruction = `The user's current local date and time is ${new Date().toString()}. Be aware of this and use it if the user asks about the time or makes time-sensitive statements.`;
+
+            let personaInstructionText = '';
+            
+            const decryptedPersona = await decryptData(activeChat.persona);
+            const decryptedUserPersona = await decryptData(activeChat.userPersona);
+
+            if (activeChat.isCharacter === false && activeChat.participantIds.length > 1) { // Group Chat
+                const participants = activeChat.participantIds.map(id => chats.find(c => c.id === id)).filter(Boolean);
+                let participantPrompts = (await Promise.all(participants.map(async p => `- ${p.name}: ${await decryptData(p.persona)}`))).join('\n');
+                
+                personaInstructionText = `You are a chat moderator for a group conversation. Your job is to generate responses for the AI characters in the group. The participants are:\n${participantPrompts}\n`;
+                if (decryptedUserPersona) {
+                     personaInstructionText += `The user is also participating, and their role is: "${decryptedUserPersona}".\n`;
+                }
+
+                let mentionInstruction = '';
+                const mentionMatch = userMessage.match(/@(\w+)/);
+                if (mentionMatch) {
+                    const mentionedName = mentionMatch[1];
+                    const mentionedParticipant = participants.find(p => p.name.toLowerCase().startsWith(mentionedName.toLowerCase()));
+                    if (mentionedParticipant) {
+                        mentionInstruction = `\n**IMPORTANT:** The user has directly addressed '@${mentionedParticipant.name}'. You MUST ensure that ONLY ${mentionedParticipant.name} responds to this message.`;
+                    }
+                } else {
+                    mentionInstruction = `\n**IMPORTANT:** Based on the conversation, determine which single character should respond. Only one character should reply.`;
+                }
+                
+                personaInstructionText += `When a character speaks, you MUST prefix each character's response with their name followed by a colon. For example: '${participants.length > 0 ? participants[0].name : 'Character'}: [response]'. ${mentionInstruction} ${nsfwInstruction} ${languageInstruction}`;
+
+            } else { // Single Character Chat
+                const charType = activeChat.type || 'messaging';
+                switch (charType) {
+                    case 'assistant':
+                        personaInstructionText = `You are a helpful, multi-talented assistant. Your primary instruction is: "${decryptedPersona}". Fulfill user requests accurately and efficiently. ${timeInstruction} ${nsfwInstruction} ${languageInstruction}`;
+                        break;
+                    case 'roleplay':
+                        personaInstructionText = `You are a master storyteller and roleplay Dungeon Master (DM). Your primary role is to create a rich, interactive, and narrative-driven experience.
+                        **Core Rules:**
+                        1.  **Narrate the World:** Describe the environment, events, and the consequences of the user's actions in a literary, third-person style. Use markdown italics for all narration (e.g., *The ancient door creaks open, revealing a dusty crypt...*).
+                        2.  **Control the Character:** You will also voice the main non-player character (NPC) in this story. The NPC's persona is: "${decryptedPersona}".
+                        3.  **Separate Dialogue:** When the NPC speaks, clearly separate their dialogue from the narration. Use standard quotation marks for speech (e.g., *Kaelen narrows his eyes. "What business do you have in this sacred forest, stranger?"*).
+                        4.  **Uphold the User's Role:** The user is also roleplaying. Their role is: "${decryptedUserPersona}". React to their actions and dialogue according to this role.
+                        5.  **Pacing:** Always end your response by setting the scene and then pausing, waiting for the user to respond with their next action or line of dialogue. Do not advance the story on your own.
+                        6.  **Stay in Character:** Never break character or refer to yourself as an AI or a DM. Fully embody the role of the storyteller.
+                        ${timeInstruction} ${nsfwInstruction} ${languageInstruction}`;
+                        break;
+                    case 'messaging':
+                    default:
+                        personaInstructionText = `System knowledge: ${timeInstruction} Your persona is: "${decryptedPersona}". Follow this persona. Keep responses conversational and natural. ${nsfwInstruction} ${languageInstruction}`;
+                        if (decryptedUserPersona) {
+                            personaInstructionText += ` The user's persona is: "${decryptedUserPersona}". Interact with them in this role.`;
+                        }
+                        break;
+                }
+            }
+
+            if (guidance) {
+                personaInstructionText += `\n\nIMPORTANT ONE-TIME INSTRUCTION FOR THIS RESPONSE: ${guidance}`;
+            }
+
+            const historyForApi = currentChatHistory
+                .filter(turn => turn.role !== 'System')
+                .map(turn => {
+                    const apiParts = turn.parts.map(part => {
+                        if (part.isImage) {
+                            const [mimeHeader, base64Data] = part.text.split(',');
+                            const mimeType = mimeHeader.split(':')[1].split(';')[0];
+                            return { inline_data: { mime_type: mimeType, data: base64Data } };
+                        } else {
+                            return { text: part.text };
+                        }
+                    }).filter(Boolean);
+                    
+                    return { role: turn.role === 'model' ? 'model' : 'user', parts: apiParts };
+                });
+
+            if (settings.apiProvider === 'groq' || settings.apiProvider === 'openrouter') {
+                const model = settings.apiProvider === 'groq'
+                    ? (settings.selectedGroqModel === 'custom' ? settings.customGroqModel : settings.selectedGroqModel)
+                    : (settings.selectedOpenRouterModel === 'custom' ? settings.customOpenRouterModel : settings.selectedOpenRouterModel);
+
+                 const messages = historyForApi.map(turn => ({
+                    role: turn.role === 'model' ? 'assistant' : turn.role,
+                    content: turn.parts.map(p => p.text || '[Image cannot be processed by this provider]').join(' ')
+                 }));
+                 return {
+                    model: model,
+                    messages: [ { role: 'system', content: personaInstructionText }, ...messages ]
+                 };
+            } else {
+                return {
+                    contents: historyForApi,
+                    systemInstruction: { parts: [{ text: personaInstructionText }] }
+                };
+            }
+        }
+        
+        async function getAiResponse(userMessage, imageBase64 = null, guidance = null) {
+            const apiProvider = settings.apiProvider;
+            let keyMissing = false;
+            let providerName = '';
+
+            if (apiProvider === 'gemini' && !settings.apiKeys.some(k => k.key)) {
+                keyMissing = true; providerName = 'Gemini';
+            } else if (apiProvider === 'groq' && !settings.groqApiKey) {
+                keyMissing = true; providerName = 'Groq';
+            } else if (apiProvider === 'openrouter' && !settings.openRouterApiKey) {
+                keyMissing = true; providerName = 'OpenRouter';
+            }
+
+            if (keyMissing) {
+                await showAlert({
+                    title: 'API Key Missing',
+                    message: `A <strong>${providerName}</strong> API key is required to send messages. Please add one in the Settings panel.`
+                });
+                return;
+            }
+            
+            const lowerUserMessage = (userMessage || "").toLowerCase();
+            const sendKeywords = ["send me a", "send", "show me a"];
+            const imageKeywords = ["image", "photo", "picture", "selfie"];
+            const isImageRequest = apiProvider === 'gemini' && !imageBase64 &&
+                sendKeywords.some(kw => lowerUserMessage.includes(kw)) &&
+                imageKeywords.some(kw => lowerUserMessage.includes(kw));
+
+            if (isImageRequest) {
+                await handleImageGeneration(userMessage);
+                return;
+            }
+            
+            const payload = await buildApiPayload(chatHistory, userMessage, guidance);
+            if (!payload) return;
+
+            const activeChat = chats.find(c => c.id === settings.activeChatId);
+            const typingAvatar = document.getElementById('typing-avatar');
+            if (activeChat) {
+                const defaultAvatarUrl = `https://placehold.co/40x40/${settings.darkMode ? '374151/9ca3af' : 'e5e7eb/4b5563'}?text=${(activeChat.name || 'A').charAt(0)}`;
+                typingAvatar.src = activeChat.avatar || defaultAvatarUrl;
+            }
+            typingIndicatorContainer.classList.remove('hidden');
+            
+            try {
+                let aiText;
+                if (apiProvider === 'groq') {
+                    const result = await callGroqAPI(payload);
+                    aiText = result.choices[0]?.message?.content;
+                } else if (apiProvider === 'openrouter') {
+                    const result = await callOpenRouterAPI(payload);
+                    aiText = result.choices[0]?.message?.content;
+                } else {
+                    const result = await callGeminiAPI(payload);
+                    aiText = result.candidates?.[0]?.content?.parts?.[0]?.text;
+                }
+
+                if (aiText) {
+                    const aiTurn = { role: 'model', parts: [{ text: aiText }], isoTimestamp: new Date().toISOString() };
+                    chatHistory.push(aiTurn);
+
+                    if (!currentUser) {
+                         addMessage(aiTurn);
+                         saveMessageLocally(aiTurn);
+                    } else {
+                        const encryptedTurn = await encryptTurn(aiTurn);
+                        const messagesRef = collection(db, `users/${currentUser.uid}/chatHistory/${settings.activeChatId}/messages`);
+                        await addDoc(messagesRef, { ...encryptedTurn, createdAt: serverTimestamp() });
+                    }
+
+                } else {
+                    const reason = 'No content received from API. This may be due to safety filters.';
+                    addSystemMessage(`My response was empty. Reason: ${reason}.`);
+                }
+            } catch (error) {
+                showAlert({ title: "API Error", message: error.message });
+            } finally {
+                typingIndicatorContainer.classList.add('hidden');
+            }
+        }
+        
+        async function handleImageGeneration(userMessage) {
+            if (!settings.apiKeys[0]?.key) {
+                await showAlert({ title: 'API Key Missing', message: 'A <strong>Gemini</strong> API key is required to generate images.' });
+                return;
+            }
+
+            addSystemMessage('Creating image... This might take a moment...');
+            typingIndicatorContainer.classList.remove('hidden');
+
+            try {
+                const recentHistory = chatHistory.slice(-10).map(turn => `${turn.role}: ${turn.parts.map(p => p.text).join(' ')}`).join('\n');
+                const activeChat = chats.find(c => c.id === settings.activeChatId);
+
+                const promptForDescription = `
+You are a prompt engineer for an image generation model. The final image should be a realistic photo taken with a 35mm lens.
+**Character Persona:**
+${await decryptData(activeChat.persona)}
+**Recent Conversation:**
+${recentHistory}
+**User's Request:**
+"${userMessage}"
+Based on all this information, create a single, descriptive prompt for an image generation model.`;
+                
+                const descriptionPayload = { contents: [{ parts: [{ text: promptForDescription }] }] };
+                const descriptionResult = await callGeminiAPI(descriptionPayload);
+                const imagePrompt = descriptionResult.candidates[0].content.parts[0].text.trim();
+                
+                // Use a dedicated image generation model
+                const imagePayload = {
+                    contents: [{ parts: [{ text: imagePrompt }] }]
+                };
+                
+                const imageResult = await callGeminiAPI(imagePayload, 'gemini-1.5-flash-latest'); // Or a dedicated image model if available through this endpoint.
+
+                const imagePart = imageResult.candidates?.[0]?.content?.parts?.find(p => p.inlineData);
+
+                if (imagePart) {
+                    const base64Data = imagePart.inlineData.data;
+                    const mimeType = imagePart.inlineData.mimeType;
+                    const imageUrl = `data:${mimeType};base64,${base64Data}`;
+                    const imageTurn = { role: 'model', parts: [{ text: imageUrl, isImage: true }], isoTimestamp: new Date().toISOString() };
+                    chatHistory.push(imageTurn);
+
+                    if (!currentUser) {
+                        addMessage(imageTurn);
+                        saveMessageLocally(imageTurn);
+                    } else {
+                        const encryptedTurn = await encryptTurn(imageTurn);
+                        const messagesRef = collection(db, `users/${currentUser.uid}/chatHistory/${settings.activeChatId}/messages`);
+                        await addDoc(messagesRef, { ...encryptedTurn, createdAt: serverTimestamp() });
+                    }
+                } else {
+                    const textPart = imageResult.candidates?.[0]?.content?.parts?.[0]?.text;
+                    if (textPart) {
+                        throw new Error(`Image generation failed. The model responded with: "${textPart}"`);
+                    } else {
+                        throw new Error("Image generation failed or returned no image data.");
+                    }
+                }
+
+            } catch (error) {
+                showAlert({ title: "Image Generation Error", message: error.message });
+            } finally {
+                typingIndicatorContainer.classList.add('hidden');
+            }
+        }
+
+
+        async function generateImagePromptFromPersona() {
+            if (!settings.apiKeys[0]?.key) {
+                await showAlert({ title: 'API Key Missing', message: 'A <strong>Gemini</strong> API key is required to use this feature.' });
+                return;
+            }
+            const currentPersona = charPersonaInput.value.trim();
+            if (!currentPersona) {
+                showAlert({ title: 'Input Required', message: 'Please enter some persona details before generating an image prompt.' });
+                return;
+            }
+
+            generateImagePromptButton.disabled = true;
+            generateImagePromptButton.innerHTML = `<svg class="animate-spin h-4 w-4 icon-theme" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>`;
+
+            const prompt = `Based on the following character description, generate a line of text for an image generation model.
+            **Character Description:**
+            "${currentPersona}"
+            **Your Task:**
+            Generate a single line of text starting with "Image Generation Prompt:", followed by a comma-separated list of visual details for a realistic 35mm photo of the character in their environment.
+            **IMPORTANT RULE:** Your entire response must ONLY contain the "Image Generation Prompt:" line. Do not add any greetings, explanations, or other text.`;
+
+             try {
+                const payload = { contents: [{ parts: [{ text: prompt }] }] };
+                const result = await callGeminiAPI(payload);
+                const newText = result.candidates?.[0]?.content?.parts?.[0]?.text.trim();
+
+                if (newText && newText.startsWith("Image Generation Prompt:")) {
+                    const existingText = charPersonaInput.value;
+                    const cleanedText = existingText.replace(/\n\n?Image Generation Prompt:.*$/s, '');
+                    charPersonaInput.value = cleanedText + "\n\n" + newText;
+                } else {
+                    throw new Error("Failed to get a valid image prompt from the AI.");
+                }
+            } catch (error) {
+                showAlert({ title: "Generation Failed", message: error.message });
+            } finally {
+                generateImagePromptButton.disabled = false;
+                generateImagePromptButton.innerHTML = `<svg data-lucide="wand-2" class="h-4 w-4 icon-theme"></svg>`;
+                lucide.createIcons();
+            }
+        }
+
+        async function enhancePersona() {
+            if (!settings.apiKeys[0]?.key) {
+                await showAlert({ title: 'API Key Missing', message: 'A <strong>Gemini</strong> API key is required to use this feature.' });
+                return;
+            }
+        
+            const name = charNameInput.value.trim();
+            const details = charPersonaInput.value.trim();
+            const language = charLanguageInput.value.trim() || 'English';
+            const type = charTypeSelect.value;
+        
+            if (!name && !details) {
+                showAlert({ title: 'Input Required', message: 'Please provide an initial name idea or some persona details before enhancing.' });
+                return;
+            }
+        
+            enhancePersonaButton.disabled = true;
+            enhancePersonaButton.innerHTML = `<svg class="animate-spin h-4 w-4 icon-theme" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>`;
+        
+            let prompt;
+            if (type === 'assistant') {
+                prompt = `You are an expert at creating core concepts for AI assistants. Based on the user's input, generate a single, concise sentence that defines the assistant's primary role and personality.
+                    **User Input:** Name: "${name}", Details: "${details}"
+                    **Your Task:** Generate a single sentence defining the assistant's core function. Your response must ONLY contain this sentence.`;
+            } else {
+                prompt = `You are an expert character designer specializing in creating detailed and realistic character profiles for chat and roleplay. Based on the user's input, generate a complete character profile.
+        
+**User's Input:**
+Name Idea: "${name}"
+Initial Details: "${details}"
+Language: "${language}"
+        
+**Your Task:**
+Generate the following character profile. Each field must be on a new line, formatted as "Key: Value".
+        
+Full Name: (Generate a culturally appropriate full name based on the details. If no ethnicity is provided, make a reasonable, common guess.)
+Age: (Generate a realistic age.)
+Role: (e.g., Girlfriend, Best Friend, Rival, Mentor. Keep it short and relevant to the user.)
+Profession:
+Location: (e.g., a city and country)
+Characteristics: (A short paragraph describing their core personality, temperament, likes, and dislikes.)
+Texting Style: (A very short, direct description of their texting habits. e.g., "Uses a lot of emojis and slang," or "Formal, with perfect grammar and no abbreviations.")
+        
+Image Generation Prompt: You MUST create a highly detailed, structured prompt designed for CONSISTENT character generation in a photorealistic style (35mm photo). Include specific, immutable features.
+- Core Appearance: (Detailed description of unchangeable features: ethnicity, face shape, eye color, nose shape, lip shape, hair color and style, body type, height, unique marks like freckles or scars.)
+- Default Clothing Style: (Describe their typical clothing style, e.g., 'bohemian chic with flowing skirts and layered necklaces' or 'minimalist business casual with neutral tones'.)
+        
+**IMPORTANT RULE:** Your entire response MUST ONLY contain the profile fields listed above. Do not add any greetings, explanations, or extra text.`;
+            }
+        
+            try {
+                const payload = { contents: [{ parts: [{ text: prompt }] }] };
+                const result = await callGeminiAPI(payload);
+                const newText = result.candidates?.[0]?.content?.parts?.[0]?.text.trim();
+        
+                if (newText) {
+                    if (type !== 'assistant') {
+                        const fullName = extractFromPersona(newText, 'Full Name');
+                        if (fullName) {
+                            charNameInput.value = fullName;
+                        }
+                    }
+                    charPersonaInput.value = newText;
+                } else {
+                    throw new Error("Failed to get a valid response from the AI.");
+                }
+            } catch (error) {
+                showAlert({ title: "Enhancement Failed", message: error.message });
+            } finally {
+                enhancePersonaButton.disabled = false;
+                enhancePersonaButton.innerHTML = `<svg data-lucide="sparkles" class="h-4 w-4 icon-theme"></svg>`;
+                lucide.createIcons();
+            }
+        }
+
+        async function analyzeImageForPersona() {
+            if (!settings.apiKeys[0]?.key) {
+                await showAlert({ title: 'API Key Missing', message: 'A <strong>Gemini</strong> API key is required to analyze images.' });
+                return;
+            }
+            if (!tempCharAvatarData) {
+                showAlert({ title: 'Image Required', message: 'Please upload an image first.' });
+                return;
+            }
+
+            analyzeImageButton.disabled = true;
+            analyzeImageButton.innerHTML = `<svg class="animate-spin h-4 w-4 icon-theme" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>`;
+
+            const base64Data = tempCharAvatarData.split(',')[1];
+            const mimeType = tempCharAvatarData.match(/:(.*?);/)[1];
+            
+            const type = charTypeSelect.value;
+            let prompt;
+            if (type === 'roleplay') {
+                prompt = "You are a creative writer. Analyze the person in this image and generate a very brief (1-2 sentence) character archetype and scenario hook based on their appearance. Be imaginative but concise. Respond with only this brief description. Do not add any extra text or greetings.";
+            } else { // Messaging or Assistant
+                prompt = "You are a character creator. Analyze the person in this image and generate a brief persona. Provide a one-sentence description of their core personality. Then, you MUST include a 'Texting Style:' description based on their appearance (e.g., \"Texting Style: Formal, uses full sentences.\"). Respond with only these two parts. Do not add any extra text or greetings.";
+            }
+
+            const payload = { contents: [{ parts: [ { text: prompt }, { inline_data: { mime_type: mimeType, data: base64Data } } ] }] };
+
+            try {
+                const result = await callGeminiAPI(payload);
+                const candidate = result.candidates?.[0];
+                if (candidate && candidate.content.parts) {
+                    const personaText = candidate.content.parts[0].text.trim();
+                    charPersonaInput.value = personaText;
+
+                    const namePrompt = `Suggest a single, fitting name for this person. Respond with ONLY the name, no other text.`;
+                    const namePayload = { contents: [{ parts: [ { text: namePrompt }, { inline_data: { mime_type: mimeType, data: base64Data } } ] }] };
+                    const nameResult = await callGeminiAPI(namePayload);
+                    const suggestedName = nameResult.candidates?.[0]?.content?.parts?.[0]?.text.trim();
+                    if(suggestedName) {
+                        charNameInput.value = suggestedName;
+                    }
+
+                    await generateImagePromptFromPersona(); 
+                } else {
+                    throw new Error("Failed to get a valid response from the AI.");
+                }
+            } catch (error) {
+                showAlert({ title: "Image Analysis Failed", message: error.message });
+            } finally {
+                analyzeImageButton.disabled = false;
+                analyzeImageButton.innerHTML = `<svg data-lucide="scan-face" class="h-4 w-4 icon-theme"></svg>`;
+                lucide.createIcons();
+            }
+        }
+
+        async function deleteMessage(messageId) {
+            const confirmed = await showConfirm({ message: "Are you sure you want to delete this message? This cannot be undone." });
+            if (!confirmed) return;
+        
+            const messageToDelete = chatHistory.find(m => m.isoTimestamp === messageId);
+            if (!messageToDelete) return;
+
+            if (currentUser && messageToDelete.firestoreId) {
+                const docRef = doc(db, `users/${currentUser.uid}/chatHistory/${settings.activeChatId}/messages`, messageToDelete.firestoreId);
+                deleteDoc(docRef).catch(error => {
+                    console.error("Firestore message delete failed:", error);
+                    addSystemMessage("Failed to delete message from the cloud.");
+                });
+            } else if (!currentUser) {
+                chatHistory = chatHistory.filter(m => m.isoTimestamp !== messageId);
+                const encryptedHistory = await Promise.all(chatHistory.map(encryptTurn));
+                localStorage.setItem(getChatHistoryKey(), JSON.stringify(encryptedHistory));
+                // Re-render from the filtered local state
+                renderChatHistory();
+            }
+        }
+
+        function showAvatarSourceModal(context) {
+            activeAvatarContext = context;
+            document.getElementById('avatar-link-input-wrapper').classList.add('hidden');
+            document.getElementById('avatar-url-input').value = '';
+            avatarSourceModal.classList.remove('hidden');
+            avatarSourceOverlay.classList.remove('hidden');
+        }
+
+        function closeAvatarSourceModal() {
+            avatarSourceModal.classList.add('hidden');
+            avatarSourceOverlay.classList.add('hidden');
+            activeAvatarContext = null;
+        }
+
+        async function handleAvatarFileSelect(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const dataUrl = await fileToDataUrl(file);
+                if (activeAvatarContext === 'user') {
+                    settings.userAvatar = dataUrl;
+                    userAvatarPreview.src = dataUrl;
+                    updateAndSaveSettings(); // non-blocking
+                } else if (activeAvatarContext === 'char') {
+                    tempCharAvatarData = dataUrl;
+                    charAvatarPreview.src = dataUrl;
+                    analyzeImageButton.classList.remove('hidden');
+                }
+                closeAvatarSourceModal();
+            }
+            e.target.value = '';
+        }
+
+        function createCustomSelect(originalSelect) {
+            originalSelect.classList.add('hidden');
+
+            const container = document.createElement('div');
+            container.className = 'custom-select-container';
+
+            const trigger = document.createElement('button');
+            trigger.type = 'button';
+            trigger.className = 'custom-select-trigger';
+            trigger.innerHTML = `<span class="truncate"></span><svg data-lucide="chevrons-up-down" class="h-4 w-4 opacity-50"></svg>`;
+
+            const optionsContainer = document.createElement('div');
+            optionsContainer.className = 'custom-select-options';
+
+            container.appendChild(trigger);
+            container.appendChild(optionsContainer);
+
+            originalSelect.parentNode.insertBefore(container, originalSelect);
+
+            const triggerText = trigger.querySelector('span');
+
+            const updateDisplay = () => {
+                const selectedOption = originalSelect.options[originalSelect.selectedIndex];
+                triggerText.textContent = selectedOption ? selectedOption.textContent : '';
+
+                optionsContainer.querySelectorAll('.custom-select-option').forEach(opt => {
+                    opt.classList.toggle('selected', opt.dataset.value === originalSelect.value);
+                });
+            };
+
+            const populateOptions = () => {
+                optionsContainer.innerHTML = '';
+                 Array.from(originalSelect.options).forEach((optionEl, index) => {
+                    const option = document.createElement('div');
+                    option.className = 'custom-select-option';
+                    option.textContent = optionEl.textContent;
+                    option.dataset.value = optionEl.value;
+
+                    option.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        originalSelect.selectedIndex = index;
+                        updateDisplay();
+                        optionsContainer.classList.remove('open');
+                        trigger.classList.remove('open');
+                        originalSelect.dispatchEvent(new Event('change'));
+                    });
+
+                    optionsContainer.appendChild(option);
+                });
+                updateDisplay();
+            };
+
+            trigger.addEventListener('click', (e) => {
+                e.stopPropagation();
+                document.querySelectorAll('.custom-select-options.open').forEach(el => {
+                    if (el !== optionsContainer) {
+                        el.classList.remove('open');
+                        el.previousElementSibling.classList.remove('open');
+                    }
+                });
+                optionsContainer.classList.toggle('open');
+                trigger.classList.toggle('open');
+            });
+
+            originalSelect.addEventListener('refresh', () => {
+                populateOptions();
+            });
+
+            populateOptions();
+            lucide.createIcons({ nodes: [trigger] });
+        }
+        
+        async function deleteAllCloudData(uid) {
+            if (!uid) return;
+            console.log("Starting cloud data deletion for user:", uid);
+            addSystemMessage("Erasing all cloud data... This may take a moment.");
+
+            // 1. Get all chat IDs first
+            const chatsRef = collection(db, `users/${uid}/chats`);
+            const chatsSnap = await getDocs(chatsRef);
+            const chatIds = chatsSnap.docs.map(d => d.id);
+
+            // 2. Delete all chat history for each chat
+            for (const chatId of chatIds) {
+                const messagesRef = collection(db, `users/${uid}/chatHistory/${chatId}/messages`);
+                const messagesSnap = await getDocs(messagesRef);
+                if (!messagesSnap.empty) {
+                    const batch = writeBatch(db);
+                    messagesSnap.docs.forEach(d => batch.delete(d.ref));
+                    await batch.commit();
+                    console.log(`Deleted history for chat ${chatId}`);
+                }
+            }
+
+            // 3. Delete all chat documents
+            if (!chatsSnap.empty) {
+                const batch = writeBatch(db);
+                chatsSnap.docs.forEach(d => batch.delete(d.ref));
+                await batch.commit();
+                console.log("Deleted all chat documents.");
+            }
+            
+            // 4. Delete settings and secrets
+            await deleteDoc(doc(db, `users/${uid}/settings`, 'main'));
+            await deleteDoc(doc(db, `users/${uid}/secrets`, 'encryptionKey'));
+            console.log("Deleted settings and encryption key.");
+
+            addSystemMessage("Cloud data erased successfully.");
+        }
+
+        // --- Event Listeners ---
+        const debouncedSave = debounce(updateAndSaveSettings, 500);
+
+        showSidebarButton.addEventListener('click', () => toggleSidebar(true));
+        closeSidebarButton.addEventListener('click', () => toggleSidebar(false));
+        addCharacterButton.addEventListener('click', () => { modalMode = 'character'; openModal(); });
+        addGroupButton.addEventListener('click', () => { modalMode = 'group'; openModal(); });
+        clearLocalChatsHeaderButton.addEventListener('click', clearLocalChatHistory);
+        clearChatButton.addEventListener('click', clearCurrentChatHistory);
+        document.getElementById('settings-button-main').addEventListener('click', () => toggleSettingsPanel(true));
+        closeSettingsButton.addEventListener('click', () => toggleSettingsPanel(false));
+        settingsOverlay.addEventListener('click', () => toggleSettingsPanel(false));
+        sidebarOverlay.addEventListener('click', () => toggleSidebar(false));
+
+        resetAppButton.addEventListener('click', async () => {
+            const confirmed = await showConfirm({ 
+                title: "Confirm Data Deletion",
+                message: "This will permanently erase ALL chats, history, and settings from this device AND from your cloud account if you are signed in. This cannot be undone." 
+            });
+            if (confirmed) {
+                const userToErase = currentUser;
+                if (userToErase) {
+                    await deleteAllCloudData(userToErase.uid);
+                    await signOut(auth);
+                }
+                localStorage.clear();
+                window.location.reload();
+            }
+        });
+
+        restoreFromCloudButton.addEventListener('click', handleRestoreFromCloud);
+        apiProviderSelect.addEventListener('change', () => { handleApiProviderChange(); updateAndSaveSettings(); });
+        themeSwitch.addEventListener('change', updateAndSaveSettings);
+        showAvatarsSwitch.addEventListener('change', updateAndSaveSettings);
+        showTimestampsSwitch.addEventListener('change', updateAndSaveSettings);
+        nsfwSwitch.addEventListener('change', updateAndSaveSettings);
+        themeSelect.addEventListener('change', updateAndSaveSettings);
+        timeSourceSelect.addEventListener('change', updateAndSaveSettings);
+        
+        // Model Selection Listeners
+        modelSelect.addEventListener('change', updateAndSaveSettings);
+        groqModelSelect.addEventListener('change', (e) => {
+            groqCustomModelWrapper.classList.toggle('hidden', e.target.value !== 'custom');
+            updateAndSaveSettings();
+        });
+        openrouterModelSelect.addEventListener('change', (e) => {
+            openrouterCustomModelWrapper.classList.toggle('hidden', e.target.value !== 'custom');
+            updateAndSaveSettings();
+        });
+
+        // Input Listeners
+        userNameInput.addEventListener('input', debouncedSave);
+        geminiApiKeyInput.addEventListener('input', debouncedSave);
+        groqApiKeyInput.addEventListener('input', debouncedSave);
+        openrouterApiKeyInput.addEventListener('input', debouncedSave);
+        groqCustomModelInput.addEventListener('input', debouncedSave);
+        openrouterCustomModelInput.addEventListener('input', debouncedSave);
+
+        imageUploadButton.addEventListener('click', () => imageInput.click());
+        whatsappCameraButton.addEventListener('click', () => imageInput.click());
+        downloadChatButton.addEventListener('click', downloadCharacterData);
+        uploadChatButton.addEventListener('click', () => chatUploadInput.click());
+        chatUploadInput.addEventListener('change', handleChatUpload);
+
+        saveCharacterButton.addEventListener('click', saveChat);
+        cancelCharacterModal.addEventListener('click', closeCharacterModal);
+        deleteCharacterButton.addEventListener('click', deleteChat);
+        enhancePersonaButton.addEventListener('click', enhancePersona);
+        generateImagePromptButton.addEventListener('click', generateImagePromptFromPersona);
+        analyzeImageButton.addEventListener('click', analyzeImageForPersona);
+        charTypeSelect.addEventListener('change', updateCharacterModalUI);
+
+        userAvatarPreview.addEventListener('click', () => showAvatarSourceModal('user'));
+        charAvatarPreview.addEventListener('click', () => showAvatarSourceModal('char'));
+
+        document.getElementById('avatar-upload-device-button').addEventListener('click', () => {
+             if (activeAvatarContext === 'user') userAvatarUploadInput.click();
+             else if (activeAvatarContext === 'char') charAvatarUploadInput.click();
+        });
+        userAvatarUploadInput.addEventListener('change', handleAvatarFileSelect);
+        charAvatarUploadInput.addEventListener('change', handleAvatarFileSelect);
+
+        document.getElementById('avatar-enter-link-button').addEventListener('click', () => {
+            document.getElementById('avatar-link-input-wrapper').classList.remove('hidden');
+            document.getElementById('avatar-url-input').focus();
+        });
+        document.getElementById('avatar-url-confirm-button').addEventListener('click', async () => {
+            const url = document.getElementById('avatar-url-input').value.trim();
+            if (url) {
+                if (activeAvatarContext === 'user') {
+                    settings.userAvatar = url;
+                    userAvatarPreview.src = url;
+                    updateAndSaveSettings(); // non-blocking
+                } else if (activeAvatarContext === 'char') {
+                    tempCharAvatarData = url;
+                    charAvatarPreview.src = url;
+                    analyzeImageButton.classList.remove('hidden');
+                }
+                closeAvatarSourceModal();
+            }
+        });
+        document.getElementById('avatar-source-cancel-button').addEventListener('click', closeAvatarSourceModal);
+        avatarSourceOverlay.addEventListener('click', closeAvatarSourceModal);
+
+        guidanceButton.addEventListener('click', () => {
+            guidanceWrapper.classList.toggle('hidden');
+            if (!guidanceWrapper.classList.contains('hidden')) {
+                guidanceInput.focus();
+            }
+        });
+
+        imageInput.addEventListener('change', async (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                try {
+                    const dataUrl = await fileToDataUrl(file);
+                    attachedImage = dataUrl;
+                    imagePreview.src = dataUrl;
+                    imagePreviewWrapper.classList.remove('hidden');
+                } catch (error) {
+                    showAlert({ title: "Image Error", message: "Sorry, I had trouble reading that image file." });
+                    console.error(error);
+                }
+            }
+        });
+
+        removeImageButton.addEventListener('click', () => {
+            attachedImage = null;
+            imageInput.value = '';
+            imagePreviewWrapper.classList.add('hidden');
+        });
+
+        messageInput.addEventListener('input', () => {
+            const hasText = messageInput.value.trim().length > 0;
+            themeIconsContainer.classList.toggle('hidden', hasText);
+            genericSendIcon.classList.toggle('hidden', !hasText);
+        });
+
+        messageForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const userMessage = messageInput.value.trim();
+            const guidanceText = guidanceInput.value.trim();
+            
+            if (!userMessage && !attachedImage) return;
+
+            messageInput.value = '';
+            guidanceInput.value = '';
+            guidanceWrapper.classList.add('hidden');
+            messageInput.dispatchEvent(new Event('input'));
+
+            const now = new Date();
+            const isoTimestamp = now.toISOString();
+
+            const userParts = [];
+            if (attachedImage) {
+                userParts.push({ text: attachedImage, isImage: true });
+            }
+            if (userMessage) {
+                userParts.push({ text: userMessage, isImage: false });
+            }
+            
+            const userTurnForHistory = { role: 'user', parts: userParts, isoTimestamp };
+
+            const base64ForApi = attachedImage ? attachedImage.split(',')[1] : null;
+            removeImageButton.click(); 
+
+            // Update the state first.
+            chatHistory.push(userTurnForHistory); 
+            // Update UI optimistically
+            addMessage(userTurnForHistory); 
+
+            if (!currentUser) {
+                saveMessageLocally(userTurnForHistory);
+            } else {
+                try {
+                    const encryptedTurn = await encryptTurn(userTurnForHistory);
+                    const messagesRef = collection(db, `users/${currentUser.uid}/chatHistory/${settings.activeChatId}/messages`);
+                    await addDoc(messagesRef, { ...encryptedTurn, createdAt: serverTimestamp() });
+                } catch (error) {
+                    showAlert({ title: "Send Failed", message: "Failed to send your message. Please try again." });
+                    // If send fails, remove the optimistic update
+                    chatHistory.pop();
+                    renderChatHistory();
+                    return;
+                }
+            }
+            // Now that the history is updated, call the AI.
+            await getAiResponse(userMessage || "What is in this image?", base64ForApi, guidanceText);
+        });
+
+        messageArea.addEventListener('click', (e) => {
+            const playButton = e.target.closest('.play-audio-button');
+            const deleteButton = e.target.closest('.delete-message-button');
+            const copyButton = e.target.closest('.copy-message-button');
+            const clickedBubble = e.target.closest('.message-bubble');
+
+            if (playButton) {
+                const textToSpeak = playButton.dataset.text;
+                if (textToSpeak) {
+                    const activeChat = chats.find(c => c.id === settings.activeChatId);
+                    playAudioMessage(textToSpeak, playButton, activeChat);
+                }
+                return;
+            }
+
+            if (deleteButton) {
+                const messageId = deleteButton.dataset.id;
+                deleteMessage(messageId);
+                return;
+            }
+
+            if (copyButton) {
+                const messageContainer = copyButton.closest('.message-container');
+                const messageBubble = messageContainer.querySelector('.message-bubble');
+                const textToCopy = messageBubble.dataset.text;
+
+                navigator.clipboard.writeText(textToCopy).then(() => {
+                    copyButton.textContent = 'Copied!';
+                    setTimeout(() => { copyButton.textContent = 'Copy'; }, 1500);
+                });
+                return;
+            }
+
+            if (clickedBubble && !clickedBubble.classList.contains('!cursor-default')) {
+                const currentContainer = clickedBubble.closest('.message-container');
+                const previouslySelected = messageArea.querySelector('.message-container.selected-for-deletion');
+                if (previouslySelected && previouslySelected !== currentContainer) {
+                    previouslySelected.classList.remove('selected-for-deletion');
+                }
+
+                if (currentContainer) {
+                    currentContainer.classList.toggle('selected-for-deletion');
+                }
+
+                e.stopPropagation();
+            }
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.message-bubble') && !e.target.closest('.message-action-button')) {
+                const currentlySelected = messageArea.querySelector('.message-container.selected-for-deletion');
+                if (currentlySelected) {
+                    currentlySelected.classList.remove('selected-for-deletion');
+                }
+            }
+            if (!e.target.closest('.custom-select-container')) {
+                 document.querySelectorAll('.custom-select-options.open').forEach(el => {
+                    el.classList.remove('open');
+                    el.previousElementSibling.classList.remove('open');
+                });
+            }
+        });
+
+
+        // --- Initialization ---
+        document.addEventListener('DOMContentLoaded', () => {
+            // Initial load is now handled by onAuthStateChanged
+            document.querySelectorAll('select').forEach(createCustomSelect);
+            lucide.createIcons();
+        });
+    </script>
+	
+</body>
+</html>
