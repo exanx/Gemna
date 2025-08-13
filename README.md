@@ -8,7 +8,7 @@
 
 It's designed to be your personal chat interface, allowing you to create unique AI characters, style the conversation to your liking, and connect to multiple powerful large language models.
 
-[**➡️ View the Live Demo**](https://exanx.github.io/gemna/) _
+[**➡️ View the Live Demo**](https://exanx.github.io/gemna/) 
 
 ---
 
