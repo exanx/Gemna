@@ -2,7 +2,19 @@
 
 ### A Customizable, Zero-Framework AI Chat Experience
 
+# Gemna Chat
 
+<p align="center">
+  <img src="screenshots/ss instagram desktop.jpeg" alt="Instagram Desktop" width="45%">
+  <img src="screenshots/ss Instagram mobile.jpg" alt="Instagram Mobile" width="45%">
+</p>
+<p align="center">
+  <img src="screenshots/ss whatsapp desktop.jpg" alt="WhatsApp Desktop" width="45%">
+  <img src="screenshots/ss whatsapp mobile.jpg" alt="WhatsApp Mobile" width="45%">
+</p>
+
+### A Customizable, Zero-Framework AI Chat Experience
+****
 
 **Gemna Chat** is a versatile and highly customizable AI chat web application designed for privacy, flexibility, and a beautiful user experience. Built entirely with vanilla JavaScript, HTML, and Tailwind CSS (via CDN), this project demonstrates that powerful, modern web apps don't always require heavy frameworks or complex build steps.
 
