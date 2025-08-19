@@ -2,7 +2,7 @@
 
 <p align="center">
   <img src="screenshots/ss instagram desktop.jpeg" alt="Instagram Desktop" width="45%">
-  <img src="screenshots/ss Instagram mobile.png" alt="Instagram Mobile" width="45%">
+  <img src="screenshots/ss instagram mobile.png" alt="Instagram Mobile" width="45%">
 </p>
 <p align="center">
   <img src="screenshots/ss whatsapp desktop.jpeg" alt="WhatsApp Desktop" width="45%">
