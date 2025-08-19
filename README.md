@@ -1,16 +1,12 @@
 # Gemna Chat
 
-### A Customizable, Zero-Framework AI Chat Experience
-
-# Gemna Chat
-
 <p align="center">
   <img src="screenshots/ss instagram desktop.jpeg" alt="Instagram Desktop" width="45%">
-  <img src="screenshots/ss Instagram mobile.jpg" alt="Instagram Mobile" width="45%">
+  <img src="screenshots/ss Instagram mobile.png" alt="Instagram Mobile" width="45%">
 </p>
 <p align="center">
   <img src="screenshots/ss whatsapp desktop.jpg" alt="WhatsApp Desktop" width="45%">
-  <img src="screenshots/ss whatsapp mobile.jpg" alt="WhatsApp Mobile" width="45%">
+  <img src="screenshots/ss whatsapp mobile.png" alt="WhatsApp Mobile" width="45%">
 </p>
 
 ### A Customizable, Zero-Framework AI Chat Experience
