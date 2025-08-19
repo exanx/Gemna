@@ -27,6 +27,12 @@
             --system-bubble-bg: #a1a1aa; --system-bubble-text: #ffffff;
             --scrollbar-thumb-color: #d1d5db;
         }
+        /* FIX: Prevent main page from scrolling */
+        html, body {
+            height: 100%;
+            width: 100%;
+            overflow: hidden;
+        }
         html[data-mode="dark"] {
             --bg-color: #111827; --text-color: #e5e7eb; --header-bg: #1f2937; --header-text: #e5e7eb;
             --user-bubble-bg: #3b82f6; --ai-bubble-bg: #374151; --ai-bubble-text: #e5e7eb;
@@ -193,9 +199,29 @@
         #app-container.loaded {
             opacity: 1;
         }
+        
+        /* FIX: Popdown positioning change */
+        #character-details-popdown {
+            position: absolute;
+            top: 4rem; /* h-16 */
+            left: 1rem;
+            right: 1rem;
+            z-index: 25; /* Higher than message area, lower than other modals */
+        }
+        @media (min-width: 768px) {
+            #character-details-popdown {
+                left: auto;
+                right: 1rem;
+            }
+        }
+        
+        #character-details-overlay {
+             position: absolute;
+        }
+
     </style>
 </head>
-<body class="overflow-hidden" data-theme="theme-imessage">
+<body data-theme="theme-imessage">
 
     <div id="loading-overlay" class="fixed inset-0 bg-theme z-[100] flex flex-col items-center justify-center gap-4 transition-opacity duration-500">
         <div class="text-2xl font-bold text-theme">Gemna Chat</div>
@@ -258,7 +284,6 @@
                 </div>
             </header>
 
-            <!-- AFTER GAP CHANGE-->
             <main id="message-area" class="flex flex-col flex-1 px-4 pt-4 pb-16 overflow-y-auto"></main>
 
             <div id="typing-indicator-container" class="hidden">
@@ -269,6 +294,20 @@
                         <span class="typing-dot w-2 h-2 bg-gray-500 dark:bg-gray-400 rounded-full"></span>
                         <span class="typing-dot w-2 h-2 bg-gray-500 dark:bg-gray-400 rounded-full"></span>
                     </div>
+                </div>
+            </div>
+
+            <!-- FIX: Popdown is now INSIDE the chat container -->
+            <div id="character-details-overlay" class="fixed inset-0 z-20 hidden"></div>
+            <div id="character-details-popdown" class="w-auto max-w-none md:w-full md:max-w-sm bg-theme border border-theme rounded-lg shadow-xl p-4 hidden transform transition-all duration-200 ease-in-out opacity-0 scale-95 origin-top md:origin-top-right">
+                <div class="flex items-center gap-4">
+                    <img id="popdown-avatar" class="w-20 h-20 rounded-full object-cover flex-shrink-0 bg-gray-200 dark:bg-gray-700">
+                    <div class="flex-1 min-w-0">
+                        <h3 id="popdown-name" class="text-xl font-bold text-theme truncate"></h3>
+                    </div>
+                </div>
+                <div id="popdown-details-content" class="mt-4 text-sm text-theme opacity-90 max-h-48 overflow-y-auto custom-scrollbar pr-2">
+                    <!-- Persona or participant list will be injected here -->
                 </div>
             </div>
 
@@ -657,21 +696,7 @@
                 <button id="confirm-ok-button" class="font-bold py-2 px-4 rounded-md text-white transition-colors">Confirm</button>
             </div>
         </div>
-
-        <!-- Character Details Popdown -->
-        <div id="character-details-overlay" class="fixed inset-0 z-30 hidden"></div>
-        <div id="character-details-popdown" class="fixed top-16 left-4 right-4 w-auto max-w-none md:left-auto md:right-4 md:w-full md:max-w-sm bg-theme border border-theme rounded-lg shadow-xl z-35 p-4 hidden transform transition-all duration-200 ease-in-out opacity-0 scale-95 origin-top md:origin-top-right">
-            <div class="flex items-center gap-4">
-                <img id="popdown-avatar" class="w-20 h-20 rounded-full object-cover flex-shrink-0 bg-gray-200 dark:bg-gray-700">
-                <div class="flex-1 min-w-0">
-                    <h3 id="popdown-name" class="text-xl font-bold text-theme truncate"></h3>
-                </div>
-            </div>
-            <div id="popdown-details-content" class="mt-4 text-sm text-theme opacity-90 max-h-48 overflow-y-auto custom-scrollbar pr-2">
-                <!-- Persona or participant list will be injected here -->
-            </div>
-        </div>
-
+        
         <input type="file" id="user-avatar-upload-input" class="hidden" accept="image/*">
         <input type="file" id="char-avatar-upload-input" class="hidden" accept="image/*">
         <input type="file" id="image-input" class="hidden" accept="image/*">
@@ -1298,6 +1323,17 @@
             const match = persona.match(regex);
             return match ? match[1].trim() : null;
         }
+        
+        function updateBodyScrollLock() {
+            const isAnyOverlayVisible = !sidebarOverlay.classList.contains('hidden') ||
+                                        !settingsOverlay.classList.contains('hidden') ||
+                                        !characterModalOverlay.classList.contains('hidden') ||
+                                        !avatarSourceOverlay.classList.contains('hidden') ||
+                                        !importCharacterOverlay.classList.contains('hidden') ||
+                                        !confirmOverlay.classList.contains('hidden');
+
+            document.body.classList.toggle('overflow-hidden', isAnyOverlayVisible);
+        }
 
         // --- Generic Confirmation Modal Logic ---
         const confirmOverlay = document.getElementById('confirm-overlay');
@@ -1318,6 +1354,7 @@
 
                 confirmModal.classList.remove('hidden');
                 confirmOverlay.classList.remove('hidden');
+                updateBodyScrollLock();
 
                 const cleanup = (result) => {
                     confirmModal.classList.add('hidden');
@@ -1325,6 +1362,7 @@
                     confirmOkButton.removeEventListener('click', okClickHandler);
                     confirmCancelButton.removeEventListener('click', cancelClickHandler);
                     confirmOverlay.removeEventListener('click', overlayClickHandler);
+                    updateBodyScrollLock();
                     resolve(result);
                 };
 
@@ -1649,6 +1687,7 @@
                 if (!activeChat) return;
 
                 popdownName.textContent = activeChat.name;
+                characterDetailsPopdown.style.zIndex = '35'; // Bring to front
 
                 if (activeChat.isCharacter === false) { // It's a group
                     popdownAvatar.src = `https://placehold.co/80x80/${settings.darkMode ? '374151/9ca3af' : 'e5e7eb/4b5563'}?text=Group`;
@@ -1661,7 +1700,6 @@
                     `;
                 } else { // It's a single character
                     popdownAvatar.src = activeChat.avatar || `https://placehold.co/80x80/${settings.darkMode ? '374151/9ca3af' : 'e5e7eb/4b5563'}?text=${activeChat.name.charAt(0)}`;
-                    // Replace newlines with <br> for proper HTML rendering
                     const personaHtml = activeChat.persona.replace(/\n/g, '<br>');
                     popdownDetailsContent.innerHTML = personaHtml;
                 }
@@ -1781,6 +1819,7 @@
             deleteCharacterButton.classList.toggle('hidden', !id);
             characterModal.classList.remove('hidden');
             characterModalOverlay.classList.remove('hidden');
+            updateBodyScrollLock();
         }
 
         function populateParticipantList(selectedIds = []) {
@@ -1803,6 +1842,7 @@
             characterModal.classList.add('hidden');
             characterModalOverlay.classList.add('hidden');
             editingChatId = null;
+            updateBodyScrollLock();
         }
 
         async function saveChat() {
@@ -2091,6 +2131,7 @@
                 importCharacterMessage.innerHTML = `A character named "<strong>${characterName}</strong>" already exists. How would you like to proceed?`;
                 importCharacterModal.classList.remove('hidden');
                 importCharacterOverlay.classList.remove('hidden');
+                updateBodyScrollLock();
 
                 const cleanup = (choice) => {
                     importCharacterModal.classList.add('hidden');
@@ -2099,6 +2140,7 @@
                     importCreateNewCharButton.removeEventListener('click', createClickHandler);
                     importCharCancelButton.removeEventListener('click', cancelClickHandler);
                     importCharacterOverlay.removeEventListener('click', cancelClickHandler);
+                    updateBodyScrollLock();
                     resolve(choice);
                 };
 
@@ -2268,6 +2310,7 @@
         function toggleSidebar(show) {
             sidebar.classList.toggle('-translate-x-full', !show);
             sidebarOverlay.classList.toggle('hidden', !show);
+            updateBodyScrollLock();
         }
         function toggleSettingsPanel(show) {
             if (show) {
@@ -2275,6 +2318,7 @@
             }
             settingsPanel.classList.toggle('translate-x-full', !show);
             settingsOverlay.classList.toggle('hidden', !show);
+            updateBodyScrollLock();
         }
 
         function createTimestampElement(timestamp) {
@@ -3059,12 +3103,14 @@ Texting Style: (A very short, direct description of their texting habits. e.g., 
             document.getElementById('avatar-url-input').value = '';
             avatarSourceModal.classList.remove('hidden');
             avatarSourceOverlay.classList.remove('hidden');
+            updateBodyScrollLock();
         }
 
         function closeAvatarSourceModal() {
             avatarSourceModal.classList.add('hidden');
             avatarSourceOverlay.classList.add('hidden');
             activeAvatarContext = null;
+            updateBodyScrollLock();
         }
 
         async function handleAvatarFileSelect(e) {
@@ -3474,6 +3520,7 @@ Texting Style: (A very short, direct description of their texting habits. e.g., 
             // Initial load is now handled by onAuthStateChanged
             document.querySelectorAll('select').forEach(createCustomSelect);
             lucide.createIcons();
+            updateBodyScrollLock(); // Initial check
         });
     </script>
 	
