@@ -1,267 +1,252 @@
 <!DOCTYPE html>
-<html lang="en" data-mode="dark">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gemna Chat - Help & Information</title>
+    <title>Gemna Chat - Help Center</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        /* Copied directly from index.html to ensure a perfect theme match */
-        :root {
-            --bg-color: #ffffff; --text-color: #1f2937; --header-bg: #f9fafb; --header-text: #1f2937;
-            --border-color: #e5e7eb; --font-family: 'Inter', sans-serif;
-            --scrollbar-thumb-color: #d1d5db; --link-color: #3b82f6; --code-bg: #f3f4f6;
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0a0a0a;
+            color: #e2e8f0;
         }
-        html[data-mode="dark"] {
-            --bg-color: #111827; --text-color: #e5e7eb; --header-bg: #1f2937; --header-text: #e5e7eb;
-            --border-color: #374151; --scrollbar-thumb-color: #4b5563; --link-color: #60a5fa; --code-bg: #1f2937;
+        #particles-js {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: -1;
         }
-        body { font-family: var(--font-family); background-color: var(--bg-color); color: var(--text-color); transition: background-color 0.3s, color 0.3s; }
-        .bg-theme { background-color: var(--bg-color); }
-        .text-theme { color: var(--text-color); }
-        .bg-header { background-color: var(--header-bg); }
-        .text-header { color: var(--header-text); }
-        .border-theme { border-color: var(--border-color); }
-        .link-theme { color: var(--link-color); }
-
-        /* Custom styles for help page content */
-        .help-content h2 { font-size: 1.5rem; font-weight: 700; margin-top: 2rem; margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 1px solid var(--border-color); color: var(--header-text); }
-        .help-content h3 { font-size: 1.25rem; font-weight: 600; margin-top: 1.5rem; margin-bottom: 0.75rem; color: var(--header-text); }
-        .help-content p { line-height: 1.6; margin-bottom: 1rem; }
-        .help-content ul, .help-content ol { margin-left: 1.5rem; margin-bottom: 1rem; list-style-position: outside; }
-        .help-content li { margin-bottom: 0.5rem; }
-        .help-content a { color: var(--link-color); text-decoration: underline; }
-        .help-content a:hover { text-decoration: none; }
-        .help-content code { background-color: var(--code-bg); padding: 0.2rem 0.4rem; border-radius: 0.25rem; font-family: monospace; font-size: 0.9em; }
-        .help-content strong { font-weight: 600; color: var(--header-text); }
-        .help-content .note { background-color: var(--code-bg); border-left: 4px solid var(--link-color); padding: 1rem; margin-bottom: 1rem; border-radius: 0.25rem; }
-        .help-content .warning { background-color: #fffbeb; border-left: 4px solid #f59e0b; padding: 1rem; margin-bottom: 1rem; border-radius: 0.25rem; color: #b45309; }
-        html[data-mode="dark"] .help-content .warning { background-color: #2a210c; border-left-color: #fcd34d; color: #fef3c7; }
-
-        /* Custom scrollbar */
-        body::-webkit-scrollbar { width: 8px; }
-        body::-webkit-scrollbar-track { background: transparent; }
-        body::-webkit-scrollbar-thumb { background-color: var(--scrollbar-thumb-color); border-radius: 10px; }
+        .content-section {
+            background-color: rgba(17, 24, 39, 0.8);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(55, 65, 81, 0.5);
+        }
+        .prose-dark {
+            color: #9ca3af;
+        }
+        .prose-dark h1, .prose-dark h2, .prose-dark h3 {
+            color: #f3f4f6;
+        }
+        .prose-dark a {
+            color: #60a5fa;
+        }
+        .prose-dark strong {
+            color: #e5e7eb;
+        }
+        .prose-dark code {
+            color: #f3f4f6;
+            background-color: #374151;
+            padding: 0.2em 0.4em;
+            margin: 0;
+            font-size: 85%;
+            border-radius: 6px;
+        }
+        .prose-dark ul > li::before {
+            background-color: #60a5fa;
+        }
+        .nav-link {
+            transition: all 0.2s ease-in-out;
+        }
+        .nav-link.active, .nav-link:hover {
+            color: #ffffff;
+            background-color: rgba(59, 130, 246, 0.2);
+            border-left-color: #3b82f6;
+        }
     </style>
 </head>
-<body class="bg-theme text-theme">
+<body class="antialiased">
+    <div id="particles-js"></div>
 
-    <header class="bg-header border-b border-theme p-4 sticky top-0 z-10">
-        <div class="container mx-auto flex justify-between items-center">
-            <h1 class="text-2xl font-bold text-header">Gemna Chat Help</h1>
-            <a href="index.html" class="link-theme font-semibold hover:underline">← Back to App</a>
-        </div>
-    </header>
-
-    <main class="container mx-auto p-4 md:p-8 max-w-4xl">
-        <div class="help-content">
-            <p class="text-lg">Welcome to Gemna Chat! This guide will help you understand all the features and get the most out of your experience.</p>
-            
-            <nav class="p-4 border border-theme rounded-lg bg-header my-8">
-                <h3 class="!mt-0">Table of Contents</h3>
-                <ol class="!mb-0">
-                    <li><a href="#getting-started">Getting Started</a></li>
-                    <li><a href="#managing-chats">Managing Chats</a></li>
-                    <li><a href="#creating-characters">Creating & Editing Characters</a></li>
-                    <li><a href="#settings">Understanding the Settings Panel</a></li>
-                    <li><a href="#best-practices">Best Practices for Great Responses</a></li>
-                    <li><a href="#terms">Terms and Conditions</a></li>
-                    <li><a href="#privacy">Privacy Policy</a></li>
-                </ol>
+    <div class="relative min-h-screen lg:grid lg:grid-cols-12">
+        <aside class="fixed top-0 left-0 h-full w-64 py-10 px-4 border-r border-gray-800 hidden lg:block col-span-3">
+            <div class="text-center mb-10">
+                <a href="#" class="text-2xl font-bold text-white flex items-center justify-center gap-2">
+                    <img src="favicon.svg" class="h-8 w-8" alt="Gemna Chat Logo">
+                    <span>Gemna Chat</span>
+                </a>
+                <p class="text-sm text-gray-400 mt-1">Help & Guide</p>
+            </div>
+            <nav id="desktop-nav" class="flex flex-col space-y-2">
+                <a href="#how-to-use" class="nav-link text-gray-400 py-2 px-4 border-l-2 border-transparent">How to Use</a>
+                <a href="#ai-models" class="nav-link text-gray-400 py-2 px-4 border-l-2 border-transparent">AI Models & APIs</a>
+                <a href="#privacy" class="nav-link text-gray-400 py-2 px-4 border-l-2 border-transparent">Privacy & Encryption</a>
+                <a href="#terms" class="nav-link text-gray-400 py-2 px-4 border-l-2 border-transparent">Terms of Service</a>
             </nav>
+        </aside>
 
-            <section id="getting-started">
-                <h2>Getting Started</h2>
-                <p>Gemna Chat is a powerful, customizable interface for interacting with various AI models. It puts you in control of the AI's personality, your own identity, and the API services you use.</p>
-                
-                <h3>The Basics</h3>
-                <ul>
-                    <li><strong>Select a Chat:</strong> The left sidebar lists all your chats. Click one to start a conversation.</li>
-                    <li><strong>Send a Message:</strong> Type your message in the input box at the bottom and press Enter or the send button.</li>
-                    <li><strong>Send an Image:</strong> Click the attachment icon to upload an image along with your message (only available for Gemini models).</li>
-                </ul>
-            </section>
-            
-            <section id="managing-chats">
-                <h2>Managing Chats</h2>
-                <p>The sidebar is your command center for all conversations.</p>
-                <ul>
-                    <li><strong>Add a Character:</strong> Click the "Add Character" icon (single person) to create a new one-on-one AI chat.</li>
-                    <li><strong>Add a Group:</strong> Click the "Add Group" icon (multiple people) to create a group chat with several AI characters you've already made.</li>
-                    <li><strong>Edit a Chat:</strong> Hover over a chat in the sidebar and click the pencil icon to edit its details.</li>
-                </ul>
-            </section>
-            
-            <section id="creating-characters">
-                <h2>Creating & Editing Characters</h2>
-                <p>The character modal is where the magic happens. A well-defined character results in a much more immersive and consistent chat experience.</p>
-                
-                <h3>Core Fields</h3>
-                <ul>
-                    <li><strong>Avatar:</strong> Give your AI a face. You can upload an image from your device or paste a direct image URL.</li>
-                    <li><strong>AI Name:</strong> The name the character will use.</li>
-                    <li><strong>Character Type:</strong> This sets the interaction style.
-                        <ul>
-                           <li><strong>Messaging:</strong> Simulates a real person texting you.</li>
-                           <li><strong>Roleplay:</strong> For narrative, story-driven interactions. The AI acts as a narrator and voices the character.</li>
-                           <li><strong>Assistant:</strong> For a more traditional, task-oriented AI assistant.</li>
-                        </ul>
-                    </li>
-                    <li><strong>AI Persona:</strong> <strong>This is the most important field.</strong> Describe the character's personality, background, job, quirks, and most importantly, their speaking or texting style. Be as detailed as possible!</li>
-                    <li><strong>Your Persona (Optional):</strong> Define who YOU are in the chat. This helps the AI react to you more realistically. For example, if the AI is a "grumpy spaceship captain," your persona could be "the optimistic new recruit."</li>
-                </ul>
+        <main class="lg:col-span-9 lg:col-start-4 p-4 sm:p-6 md:p-10">
+             <header class="lg:hidden flex items-center justify-between mb-8">
+                <a href="#" class="text-xl font-bold text-white flex items-center gap-2">
+                    <img src="favicon.svg" class="h-8 w-8" alt="Gemna Chat Logo">
+                    <span>Gemna Chat Help</span>
+                </a>
+                <button id="mobile-menu-button" class="p-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-800">
+                    <svg data-lucide="menu" class="h-6 w-6"></svg>
+                </button>
+            </header>
+            <div id="mobile-nav" class="hidden lg:hidden mb-8">
+                <nav class="flex flex-col space-y-2 bg-gray-900 p-4 rounded-lg">
+                    <a href="#how-to-use" class="nav-link text-gray-400 py-2 px-4 border-l-2 border-transparent">How to Use</a>
+                    <a href="#ai-models" class="nav-link text-gray-400 py-2 px-4 border-l-2 border-transparent">AI Models & APIs</a>
+                    <a href="#privacy" class="nav-link text-gray-400 py-2 px-4 border-l-2 border-transparent">Privacy & Encryption</a>
+                    <a href="#terms" class="nav-link text-gray-400 py-2 px-4 border-l-2 border-transparent">Terms of Service</a>
+                </nav>
+            </div>
 
-                <h3>AI-Powered Helpers</h3>
-                <ul>
-                    <li><strong>Enhance Persona (Sparkles Icon):</strong> If you only have a basic idea, provide a name or a few keywords and click this button. The AI will generate a detailed persona for you.</li>
-                    <li><strong>Analyze Image (Scan Face Icon):</strong> After uploading an avatar, click this to have the AI describe the person and create a basic persona based on their appearance.</li>
-                     <li><strong>Generate Image Prompt (Wand Icon):</strong> The AI will analyze the persona and create a detailed text prompt suitable for generating consistent images of the character with AI image models. This is automatically appended to the persona.</li>
-                </ul>
-            </section>
-            
-             <section id="settings">
-                <h2>Understanding the Settings Panel</h2>
-                <p>Click the gear icon in the chat header to access settings.</p>
+            <div class="space-y-16">
+                <section id="how-to-use" class="content-section rounded-2xl p-6 md:p-8 prose prose-dark max-w-none">
+                    <h1 class="text-3xl font-extrabold tracking-tight">How to Use Gemna Chat</h1>
+                    <p>Welcome to Gemna Chat! This guide will walk you through the main features of the app.</p>
+                    
+                    <h2><i data-lucide="users" class="inline-block mr-2"></i>Creating Characters & Groups</h2>
+                    <p>You can create individual AI characters or group chats with multiple characters.</p>
+                    <ul>
+                        <li><strong>Add a Character:</strong> Click the <code class="font-mono">+ Person</code> icon in the sidebar. Fill in the details like name, persona, and texting style. You can even use AI to enhance the persona for you!</li>
+                        <li><strong>Create a Group:</strong> Click the <code class="font-mono">+ Group</code> icon. Give your group a name and select the characters you want to include from your existing character list.</li>
+                    </ul>
 
-                <h3>Account</h3>
-                <p>By default, all your data is stored only on your current device. Signing in allows you to sync your chats, characters, and settings across multiple devices.</p>
-                <ul>
-                    <li><strong>Google Sign-In:</strong> A quick way to create an account and sync data.</li>
-                    <li><strong>Email & Password:</strong> Create a traditional account.</li>
-                </ul>
-                <div class="note">
-                    <strong>Important:</strong> When you sign in for the first time, your current local data is uploaded to the cloud to become your new master save.
-                </div>
+                    <h2><i data-lucide="message-circle" class="inline-block mr-2"></i>Chatting with AI</h2>
+                    <p>The chat interface is designed to be intuitive and powerful.</p>
+                    <ul>
+                        <li><strong>Sending Messages:</strong> Simply type your message in the input box at the bottom and press Enter or the send button.</li>
+                        <li><strong>Image Support:</strong> With Gemini models, you can upload images to discuss them with the AI. Click the paperclip or camera icon to attach an image.</li>
+                        <li><strong>Chat Sync:</strong> Sign in with your Google account to sync your characters, chat history, and settings across all your devices.</li>
+                    </ul>
 
-                <h3>Appearance</h3>
-                <p>Customize the look and feel of the app to your liking. Change the theme to mimic popular messaging apps, toggle dark mode, and show or hide chat avatars and timestamps.</p>
+                    <h2><i data-lucide="settings" class="inline-block mr-2"></i>Customizing Your Experience</h2>
+                    <p>Click the <strong>Settings</strong> icon in the chat header to personalize your app.</p>
+                    <ul>
+                        <li><strong>Appearance:</strong> Switch between light and dark mode, and choose from various messaging app themes like iMessage, WhatsApp, and more.</li>
+                        <li><strong>API & Models:</strong> Select your preferred AI provider and model. This is where you'll enter your API keys.</li>
+                        <li><strong>Data Management:</strong> Import and export character data (including chat history) as JSON files.</li>
+                    </ul>
+                </section>
 
-                <h3>Your Character</h3>
-                <p>Set your global user name and avatar. This is how the AI will see you in all chats unless you specify a different "Your Persona" inside a specific character's settings.</p>
+                <section id="ai-models" class="content-section rounded-2xl p-6 md:p-8 prose prose-dark max-w-none">
+                    <h1 class="text-3xl font-extrabold tracking-tight">AI Models & APIs</h1>
+                    <p>Gemna Chat supports multiple AI providers to give you flexibility and power.</p>
 
-                <h3>API & Model</h3>
-                <p>This is a "Bring Your Own Key" (BYOK) application. You must provide your own API key from a supported AI provider to send messages.</p>
-                <ul>
-                    <li><strong>API Provider:</strong> Choose between Google Gemini, Groq, or OpenRouter.</li>
-                    <li><strong>API Key:</strong> Paste your key here. Your key is stored locally on your device or securely in your cloud settings if you are signed in. We never see or store your key on our servers.</li>
-                    <li><strong>Where to get keys:</strong>
-                        <ul>
-                            <li><a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener noreferrer">Google AI Studio (for Gemini)</a></li>
-                            <li><a href="https://console.groq.com/keys" target="_blank" rel="noopener noreferrer">GroqCloud (for Llama, etc.)</a></li>
-                            <li><a href="https://openrouter.ai/keys" target="_blank" rel="noopener noreferrer">OpenRouter (for a wide variety of models)</a></li>
-                        </ul>
-                    </li>
-                    <li><strong>Model Selection:</strong> Choose the specific AI model you want to use. Performance, intelligence, and cost will vary.</li>
-                </ul>
-                
-                <h3>Data Management</h3>
-                <ul>
-                    <li><strong>Import Character Data:</strong> Load a character and their chat history from a <code>.json</code> file you previously downloaded.</li>
-                    <li><strong>Download Character Data:</strong> (Button in chat header) Save the current character and your full conversation to a <code>.json</code> file on your device.</li>
-                    <li><strong>Restore from Cloud:</strong> If your local chat history seems out of sync, this button will force-download the latest version from the cloud (requires sign-in).</li>
-                </ul>
-                
-                <h3>Danger Zone</h3>
-                <div class="warning">
-                    <strong>Use with extreme caution.</strong> Actions in this section are permanent and cannot be undone.
-                </div>
-                <ul>
-                    <li><strong>Allow Potentially NSFW Content:</strong> Toggles the safety filter. By enabling this, you confirm you are of legal age to view such content. The effectiveness of this depends on the API provider's own policies.</li>
-                    <li><strong>Reset & Erase All Data:</strong> This will delete EVERYTHING—all chats, settings, and history from your device AND from your cloud account if you are signed in.</li>
-                </ul>
-            </section>
-            
-            <section id="best-practices">
-                <h2>Best Practices for Great Responses</h2>
-                <ul>
-                    <li><strong>Detailed Personas are Key:</strong> The AI's consistency is directly tied to how well you define its persona. Don't just say "a nice friend." Say "A 28-year-old librarian named Eleanor who is kind and patient, but very formal. She texts using perfect grammar, full sentences, and never uses slang or emojis."</li>
-                    <li><strong>Use the Guidance Button:</strong> For a one-time instruction, use the sparkles icon next to the message input. For example, after the AI gives a complex answer, you can use the guidance "Explain that again, but like I'm five years old."</li>
-                    <li><strong>Mention in Group Chats:</strong> To direct a message to a specific AI in a group chat, use <code>@Name</code>. For example, <code>@Ava what do you think?</code> will ensure only Ava responds.</li>
-                    <li><strong>Refresh the Roleplay:</strong> If a roleplay gets stuck or goes off track, you can edit the AI's last message to put it back on course, or send a message like `(OOC: Let's reset the scene to the tavern)` to guide it.</li>
-                </ul>
-            </section>
+                    <h2><i data-lucide="sparkles" class="inline-block mr-2"></i>Supported Providers</h2>
+                    <ul>
+                        <li><strong>Google Gemini:</strong> A powerful family of models from Google. Supports text, image input, and TTS (Text-to-Speech). Requires a Gemini API key from <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener noreferrer">Google AI Studio</a>.</li>
+                        <li><strong>Groq:</strong> Known for its incredible speed. Ideal for fast-paced conversations. Requires a Groq API key from <a href="https://console.groq.com/keys" target="_blank" rel="noopener noreferrer">GroqCloud</a>.</li>
+                        <li><strong>OpenRouter:</strong> A service that gives you access to a wide variety of models from different developers, including open-source options. Requires an OpenRouter API key from <a href="https://openrouter.ai/keys" target="_blank" rel="noopener noreferrer">OpenRouter.ai</a>.</li>
+                    </ul>
 
-            <section id="terms">
-                <h2>Terms and Conditions</h2>
-                <p>Last updated: [Current Date]</p>
-                <p>By using the Gemna Chat application ("Service"), you agree to be bound by these Terms and Conditions. If you disagree with any part of the terms, you may not access the Service.</p>
-                
-                <h3>1. Use of Service</h3>
-                <p>The Service is provided to you "AS IS" and "AS AVAILABLE". You are responsible for your use of the Service, for any content you post to the Service, and for any consequences thereof.</p>
-                
-                <h3>2. API Keys and Usage</h3>
-                <p>The Service requires you to provide your own API keys from third-party providers (e.g., Google, Groq, OpenRouter). You are solely responsible for all costs, fees, and usage associated with your API keys. You are also responsible for complying with the terms of service of your chosen API provider.</p>
+                    <h2><i data-lucide="key-round" class="inline-block mr-2"></i>API Key Management</h2>
+                    <p>Your API keys are stored securely on your device and are never shared with our servers. To use a provider, you must obtain an API key from their respective website and enter it in the <strong>Settings -> API & Model</strong> section of the app.</p>
+                </section>
 
-                <h3>3. User-Generated Content</h3>
-                <p>You are solely responsible for the content you create and the conversations you have using the Service. We do not endorse, support, represent or guarantee the completeness, truthfulness, accuracy, or reliability of any content generated by the AI. We will not be liable for any content, including, but not limited to, any errors or omissions in any content, or any loss or damage of any kind incurred as a result of the use of any content generated.</p>
+                <section id="privacy" class="content-section rounded-2xl p-6 md:p-8 prose prose-dark max-w-none">
+                    <h1 class="text-3xl font-extrabold tracking-tight">Privacy & Encryption</h1>
+                    <p>We take your privacy very seriously. Our goal is to provide a secure and private environment for your conversations.</p>
 
-                <h3>4. Disclaimer of Warranties</h3>
-                <p>The Service is provided without warranties of any kind, whether express or implied, including, but not limited to, implied warranties of merchantability, fitness for a particular purpose, non-infringement, or course of performance.</p>
+                    <h2><i data-lucide="lock" class="inline-block mr-2"></i>End-to-End Encryption</h2>
+                    <p>All your chat messages, character personas, and user personas are <strong>end-to-end encrypted</strong> using the AES-256 standard. An encryption key is generated on your device and is used to encrypt your data before it's saved.</p>
+                    <ul>
+                        <li><strong>Local Storage:</strong> When you're not signed in, your encrypted data is stored only in your browser's local storage.</li>
+                        <li><strong>Cloud Sync:</strong> When you sign in, your encrypted data is synced to our secure cloud database. We cannot read your messages, as only your device holds the key to decrypt them.</li>
+                    </ul>
 
-                <h3>5. Limitation of Liability</h3>
-                <p>In no event shall the creators or providers of Gemna Chat be liable for any indirect, incidental, special, consequential or punitive damages, including without limitation, loss of profits, data, use, goodwill, or other intangible losses, resulting from (i) your access to or use of or inability to access or use the Service; (ii) any conduct or content of any third party on the Service; (iii) any content obtained from the Service; and (iv) unauthorized access, use or alteration of your transmissions or content, whether based on warranty, contract, tort (including negligence) or any other legal theory, whether or not we have been informed of the possibility of such damage.</p>
-            </section>
-            
-            <section id="privacy">
-                <h2>Privacy Policy</h2>
-                <p>Last updated: [Current Date]</p>
-                <p>Your privacy is critically important to us. Gemna Chat is designed with a "privacy-first" approach. Our policy is to collect the absolute minimum amount of information necessary to provide the Service.</p>
+                    <h2><i data-lucide="shield-off" class="inline-block mr-2"></i>Data We Don't Collect</h2>
+                    <p>We do not collect or store any personal information beyond what is necessary for account authentication (i.e., your email address if you sign up). We do not have access to your API keys or the content of your conversations.</p>
+                </section>
 
-                <h3>1. Data Storage and You</h3>
-                <p>You have two primary modes of data storage:</p>
-                <ul>
-                    <li><strong>Local-Only (Not Signed In):</strong> When you are not signed in, <strong>all of your data</strong>—including character definitions, chat history, and API keys—is stored exclusively in your web browser's local storage on your device. We do not have access to it. If you clear your browser data, it will be permanently lost.</li>
-                    <li><strong>Cloud Sync (Signed In):</strong> When you sign in (via Google or Email/Password), your data is synced to Google's Firebase platform to enable access across devices.</li>
-                </ul>
+                <section id="terms" class="content-section rounded-2xl p-6 md:p-8 prose prose-dark max-w-none">
+                    <h1 class="text-3xl font-extrabold tracking-tight">Terms of Service</h1>
+                    <p>By using Gemna Chat ("the Service"), you agree to these terms.</p>
 
-                <h3>2. Encryption</h3>
-                <p>When your data is stored in the cloud (Firebase), your chat messages and character personas are <strong>end-to-end encrypted</strong> using a key that is generated and stored on your device or in a secure part of your Firebase account. <strong>We, the providers of Gemna Chat, do not have access to your private encryption key and cannot read your unencrypted chat history or persona data.</strong></p>
+                    <h2><i data-lucide="gavel" class="inline-block mr-2"></i>Use of Service</h2>
+                    <p>You are responsible for your use of the Service and for any content you provide, including compliance with applicable laws, rules, and regulations. You are responsible for managing and securing your own API keys.</p>
 
-                <h3>3. Third-Party Services</h3>
-                <p>The Service relies on third-party providers to function. Your use of these services is subject to their respective privacy policies.</p>
-                <ul>
-                    <li><strong>Google Firebase:</strong> Used for authentication and cloud data storage if you sign in.</li>
-                    <li><strong>Google AI, Groq, OpenRouter:</strong> Your chat messages are sent to these providers to generate AI responses. We are not responsible for how they handle your data. Please review their privacy policies before use.</li>
-                </ul>
+                    <h2><i data-lucide="shield-alert" class="inline-block mr-2"></i>Disclaimer of Warranty</h2>
+                    <p>The Service is provided "as is" without any warranties of any kind. We do not guarantee that the service will be uninterrupted, secure, or error-free. The responses generated by the AI models are not affiliated with us and we are not responsible for their accuracy, safety, or content.</p>
+                    
+                    <h2><i data-lucide="circle-slash" class="inline-block mr-2"></i>Limitation of Liability</h2>
+                    <p>In no event shall Gemna Chat or its developers be liable for any indirect, incidental, special, consequential or punitive damages, or any loss of profits or revenues, whether incurred directly or indirectly, or any loss of data, use, good-will, or other intangible losses, resulting from (i) your access to or use of or inability to access or use the service; (ii) any conduct or content of any third party on the service, including without limitation, any defamatory, offensive or illegal conduct of other users or third parties; (iii) any content obtained from the service; or (iv) unauthorized access, use or alteration of your transmissions or content.</p>
+                </section>
 
-                <h3>4. Disclaimer of Responsibility</h3>
-                <p><strong>We explicitly deny all responsibility for your data.</strong> Since your data is stored either locally on your device or on third-party cloud services (Firebase) using an encryption key we cannot access, we cannot guarantee its security, integrity, or availability. You are solely responsible for the security and backup of your data.</p>
-                <p>We are not liable for:</p>
-                <ul>
-                    <li>Any data loss, corruption, or deletion, whether from local storage or the cloud.</li>
-                    <li>Any security breaches that occur on third-party services like Google Firebase or your chosen API provider.</li>
-                    <li>The content generated by the AI, which may be offensive, inaccurate, or harmful.</li>
-                </ul>
-                <p>By using this Service, you acknowledge and agree that you are using it at your own risk.</p>
-            </section>
-        </div>
-    </main>
-    
-    <footer class="text-center p-4 mt-8 text-sm opacity-60">
-        <p>&copy; Gemna Chat</p>
-    </footer>
+                <footer class="text-center py-10">
+                    <p class="text-gray-500">&copy; 2025 Gemna Chat. All Rights Reserved.</p>
+                </footer>
+            </div>
+        </main>
+    </div>
 
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
     <script>
-        // Simple script to sync the theme with the main app's settings
-        document.addEventListener('DOMContentLoaded', () => {
-            try {
-                const SETTINGS_KEY = 'gemna-chat-settings-v32';
-                const savedSettings = localStorage.getItem(SETTINGS_KEY);
-                if (savedSettings) {
-                    const settings = JSON.parse(savedSettings);
-                    if (settings.darkMode === true) {
-                        document.documentElement.dataset.mode = 'dark';
-                    } else {
-                        document.documentElement.dataset.mode = 'light';
-                    }
-                }
-            } catch (e) {
-                console.error("Could not load theme settings.", e);
-            }
+        // Initialize Lucide icons
+        lucide.createIcons();
+
+        // Interactive background
+        particlesJS('particles-js', {
+            "particles": {
+                "number": { "value": 60, "density": { "enable": true, "value_area": 800 } },
+                "color": { "value": "#374151" },
+                "shape": { "type": "circle" },
+                "opacity": { "value": 0.5, "random": true },
+                "size": { "value": 3, "random": true },
+                "line_linked": { "enable": true, "distance": 150, "color": "#4b5563", "opacity": 0.4, "width": 1 },
+                "move": { "enable": true, "speed": 1, "direction": "none", "random": false, "straight": false, "out_mode": "out", "bounce": false }
+            },
+            "interactivity": {
+                "detect_on": "canvas",
+                "events": { "onhover": { "enable": true, "mode": "repulse" }, "onclick": { "enable": true, "mode": "push" }, "resize": true },
+                "modes": { "repulse": { "distance": 100, "duration": 0.4 }, "push": { "particles_nb": 4 } }
+            },
+            "retina_detect": true
         });
+
+        // Smooth scrolling and active nav link highlighting
+        document.addEventListener('DOMContentLoaded', () => {
+            const sections = document.querySelectorAll('section');
+            const navLinks = document.querySelectorAll('.nav-link');
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileNav = document.getElementById('mobile-nav');
+
+            mobileMenuButton.addEventListener('click', () => {
+                mobileNav.classList.toggle('hidden');
+            });
+
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        navLinks.forEach(link => {
+                            link.classList.remove('active');
+                            if (link.getAttribute('href').substring(1) === entry.target.id) {
+                                link.classList.add('active');
+                            }
+                        });
+                    }
+                });
+            }, { threshold: 0.5 });
+
+            sections.forEach(section => {
+                observer.observe(section);
+            });
+
+            navLinks.forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    document.querySelector(this.getAttribute('href')).scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                    if(mobileNav.classList.contains('hidden') === false){
+                        mobileNav.classList.add('hidden');
+                    }
+                });
+            });
+        });
+
     </script>
 </body>
 </html>

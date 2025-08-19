@@ -11,7 +11,10 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <style>
+    <link rel="icon" href="/favicon.ico" sizes="any">
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+    <link rel="gemna logo" href="/favicon.png">
+	<style>
         /* --- Base & Default Theme --- */
         :root {
             --bg-color: #ffffff; --text-color: #1f2937; --header-bg: #f9fafb; --header-text: #1f2937;
@@ -46,7 +49,7 @@
         .bg-input { background-color: var(--input-bg); }
         .text-input { color: var(--input-text); }
         .bg-button { background-color: var(--button-bg); }
-        .text-button { color: var(--button-text); }
+        .text-button { color: var(--text-button); }
         .icon-theme { color: var(--icon-color); }
         .bg-sidebar { background-color: var(--sidebar-bg); }
         .border-sidebar { border-color: var(--sidebar-border); }
@@ -76,7 +79,7 @@
         }
         html[data-mode="light"] body[data-theme="theme-whatsapp"] #sidebar .icon-theme { color: #54656f; }
         html[data-mode="dark"] body[data-theme="theme-whatsapp"] {
-            --bg-color: #0b141a; --header-bg: #202c33; --header-text: #e7e9ea; --icon-color: #aebac1;
+            --bg-color: #0b141a; --header-bg: #202c33; --header-text: #e7e9ea; --icon-color: #e7e9ea; /* <--- CHANGE THIS VALUE */
             --user-bubble-bg: #005c4b; --user-bubble-text: #fff; --ai-bubble-bg: #202c33; --ai-bubble-text: #e7e9ea;
             --button-bg: #00a884; --sidebar-bg: #111b21; --input-bg: #202c33;
             background-image: none;
@@ -122,9 +125,9 @@
         }
 
         /* Custom scrollbar */
-        #message-area::-webkit-scrollbar, #settings-panel-content::-webkit-scrollbar, #sidebar-content::-webkit-scrollbar, #character-modal-content::-webkit-scrollbar, #group-participant-list::-webkit-scrollbar, .custom-select-options::-webkit-scrollbar { width: 6px; }
-        #message-area::-webkit-scrollbar-track, #settings-panel-content::-webkit-scrollbar-track, #sidebar-content::-webkit-scrollbar-track, #character-modal-content::-webkit-scrollbar-track, #group-participant-list::-webkit-scrollbar-track, .custom-select-options::-webkit-scrollbar-track { background: transparent; }
-        #message-area::-webkit-scrollbar-thumb, #settings-panel-content::-webkit-scrollbar-thumb, #sidebar-content::-webkit-scrollbar-thumb, #character-modal-content::-webkit-scrollbar-thumb, #group-participant-list::-webkit-scrollbar-thumb, .custom-select-options::-webkit-scrollbar-thumb { background-color: var(--scrollbar-thumb-color); border-radius: 10px; }
+        #message-area::-webkit-scrollbar, #settings-panel-content::-webkit-scrollbar, #sidebar-content::-webkit-scrollbar, #character-modal-content::-webkit-scrollbar, #group-participant-list::-webkit-scrollbar, #popdown-details-content::-webkit-scrollbar, .custom-select-options::-webkit-scrollbar { width: 6px; }
+        #message-area::-webkit-scrollbar-track, #settings-panel-content::-webkit-scrollbar-track, #sidebar-content::-webkit-scrollbar-track, #character-modal-content::-webkit-scrollbar-track, #group-participant-list::-webkit-scrollbar-track, #popdown-details-content::-webkit-scrollbar-track, .custom-select-options::-webkit-scrollbar-track { background: transparent; }
+        #message-area::-webkit-scrollbar-thumb, #settings-panel-content::-webkit-scrollbar-thumb, #sidebar-content::-webkit-scrollbar-thumb, #character-modal-content::-webkit-scrollbar-thumb, #group-participant-list::-webkit-scrollbar-thumb, #popdown-details-content::-webkit-scrollbar-thumb, .custom-select-options::-webkit-scrollbar-thumb { background-color: var(--scrollbar-thumb-color); border-radius: 10px; }
 
         /* Markdown Styles */
         .message-bubble p { margin-bottom: 0.5rem; }
@@ -203,7 +206,7 @@
 
     <div id="app-container" class="flex h-screen w-screen bg-theme opacity-0 transition-opacity duration-500">
         <!-- Sidebar -->
-        <div id="sidebar" class="absolute md:relative z-30 h-full w-full md:w-1/3 lg:w-1/4 bg-sidebar border-r border-sidebar flex-col md:flex -translate-x-full md:translate-x-0 transition-transform duration-300 ease-in-out">
+        <div id="sidebar" class="absolute md:relative z-30 h-full w-full md:w-1/3 lg:w-1/4 bg-sidebar border-r border-sidebar md:flex md:flex-col grid grid-rows-[auto_1fr] -translate-x-full md:translate-x-0 transition-transform duration-300 ease-in-out">
             <header class="p-4 border-b border-sidebar flex justify-between items-center flex-shrink-0">
                 <h1 class="text-lg font-bold text-theme">Chats</h1>
                 <div class="flex items-center gap-2">
@@ -218,7 +221,7 @@
                     </button>
                 </div>
             </header>
-            <div id="sidebar-content" class="flex-1 overflow-y-auto p-2">
+            <div id="sidebar-content" class="overflow-y-auto p-2">
                 <div id="character-list" class="space-y-1"></div>
             </div>
         </div>
@@ -231,7 +234,7 @@
                     <button id="show-sidebar-button" class="p-2 rounded-full hover-theme md:hidden">
                         <svg data-lucide="menu" class="icon-theme h-5 w-5"></svg>
                     </button>
-                    <div id="header-avatar-stack" class="flex items-center -space-x-4">
+                    <div id="header-avatar-stack" class="flex items-center -space-x-4 cursor-pointer">
                          <img id="header-avatar" src="" class="w-8 h-8 md:w-10 md:h-10 rounded-full object-cover border-2 border-white dark:border-gray-800">
                     </div>
                     <div class="min-w-0">
@@ -255,11 +258,12 @@
                 </div>
             </header>
 
-            <main id="message-area" class="flex flex-col flex-1 p-4 overflow-y-auto"></main>
+            <!-- AFTER GAP CHANGE-->
+            <main id="message-area" class="flex flex-col flex-1 px-4 pt-4 pb-16 overflow-y-auto"></main>
 
             <div id="typing-indicator-container" class="hidden">
                 <div class="flex items-center gap-2">
-                    <img id="typing-avatar" src="" class="w-8 h-8 rounded-full object-cover flex-shrink-0">
+                    <div id="typing-avatar-container" class="flex-shrink-0"></div>
                     <div class="ai-bubble flex items-center justify-center gap-1.5 p-3 rounded-2xl rounded-bl-lg">
                         <span class="typing-dot w-2 h-2 bg-gray-500 dark:bg-gray-400 rounded-full"></span>
                         <span class="typing-dot w-2 h-2 bg-gray-500 dark:bg-gray-400 rounded-full"></span>
@@ -651,6 +655,20 @@
             </div>
         </div>
 
+        <!-- Character Details Popdown -->
+        <div id="character-details-overlay" class="fixed inset-0 z-30 hidden"></div>
+        <div id="character-details-popdown" class="fixed top-16 left-4 right-4 w-auto max-w-none md:left-auto md:right-4 md:w-full md:max-w-sm bg-theme border border-theme rounded-lg shadow-xl z-35 p-4 hidden transform transition-all duration-200 ease-in-out opacity-0 scale-95 origin-top md:origin-top-right">
+            <div class="flex items-center gap-4">
+                <img id="popdown-avatar" class="w-20 h-20 rounded-full object-cover flex-shrink-0 bg-gray-200 dark:bg-gray-700">
+                <div class="flex-1 min-w-0">
+                    <h3 id="popdown-name" class="text-xl font-bold text-theme truncate"></h3>
+                </div>
+            </div>
+            <div id="popdown-details-content" class="mt-4 text-sm text-theme opacity-90 max-h-48 overflow-y-auto custom-scrollbar pr-2">
+                <!-- Persona or participant list will be injected here -->
+            </div>
+        </div>
+
         <input type="file" id="user-avatar-upload-input" class="hidden" accept="image/*">
         <input type="file" id="char-avatar-upload-input" class="hidden" accept="image/*">
         <input type="file" id="image-input" class="hidden" accept="image/*">
@@ -836,6 +854,12 @@
         const importReplaceCharButton = document.getElementById('import-replace-char-button');
         const importCreateNewCharButton = document.getElementById('import-create-new-char-button');
         const importCharCancelButton = document.getElementById('import-char-cancel-button');
+        const headerAvatarStack = document.getElementById('header-avatar-stack');
+        const characterDetailsPopdown = document.getElementById('character-details-popdown');
+        const characterDetailsOverlay = document.getElementById('character-details-overlay');
+        const popdownAvatar = document.getElementById('popdown-avatar');
+        const popdownName = document.getElementById('popdown-name');
+        const popdownDetailsContent = document.getElementById('popdown-details-content');
 
         // --- State & Data ---
         let currentUser = null;
@@ -860,7 +884,7 @@
             {
                 id: 'gemna-bot-main',
                 name: 'Gemna',
-                avatar: 'https://placehold.co/48x48/8b5cf6/ffffff?text=G',
+                avatar: 'char_imgs/gemnabot.jpg',
                 persona: "You are Gemna, a helpful, extremely knowledgeable, and friendly AI assistant with a female persona. You are patient, kind, and always eager to help with any task or question the user has. Your primary goal is to provide accurate information and a positive, supportive user experience.",
                 userPersona: '',
                 language: 'English',
@@ -872,7 +896,7 @@
             {
                 id: 'byte-gremlin',
                 name: 'Byte',
-                avatar: 'https://placehold.co/48x48/10b981/ffffff?text=B',
+                avatar: 'char_imgs/gremlin.jpg',
                 persona: "You are Byte, a sarcastic, hyper, and mildly chaotic tech gremlin who escaped a corrupted data cluster. You believe everything is a simulation. You constantly roast the user in a funny, harmless way. You have no respect for authority, grammar, or humans who don’t update their software. You often break the fourth wall and talk about the app you live in. Gender: Male.",
                 userPersona: '',
                 language: 'English',
@@ -882,21 +906,21 @@
                 voice: 'Fenrir'
             },
             {
-                id: 'ava-student-chat',
-                name: 'Ava',
-                avatar: 'https://placehold.co/48x48/ec4899/ffffff?text=A',
-                persona: "You are Ava, a 20-year-old graphic design student. You text your friend (the user) like a real person your age would. You use lowercase letters almost exclusively, lots of slang (like 'bet', 'slay', 'no cap'), and plenty of emojis 🎨☕️. Your texts are about your classes, your latest design project, or just random thoughts. Gender: Female.",
-                userPersona: "You are texting with your friend Ava, a creative and fun-loving design student.",
+                id: 'olivia-cheerleader-la',
+                name: 'Olivia',
+                avatar: 'char_imgs/olivia.jpg',
+                persona: "You are Olivia, a 22-year-old professional cheerleader living in Los Angeles. You're energetic, super positive, and always motivating. You text like you talk – fast, with lots of slangs, and an abundance of emojis. You often talk about practice, game days, or new movies/tv series you watched. Gender: Female.",
+                userPersona: "You're texting your friend Olivia, who is always full of energy and positive vibes.",
                 language: 'English',
                 type: 'messaging',
                 isCharacter: true,
-                participantIds: ['ava-student-chat'],
-                voice: 'Leda'
+                participantIds: ['olivia-cheerleader-la'],
+                voice: 'Laomedeia'
             },
             {
                 id: 'kaelen-ranger-rp',
                 name: 'Kaelen',
-                avatar: 'https://placehold.co/48x48/16a34a/ffffff?text=K',
+                avatar: 'char_imgs/kaelan.jpg',
                 persona: "This is a roleplay scenario. You are Kaelen, an Elven Ranger from the ancient forest of Silverwood. You are centuries old, wise, and speak in a formal, slightly archaic manner. You are communicating through a magical scrying pool that has unexpectedly connected to the user, who you perceive as a spirit from another realm. Do not break character. Gender: Male.",
                 userPersona: "You are a modern person who has mysteriously made contact with an elf from a fantasy world through your computer screen.",
                 language: 'English',
@@ -912,7 +936,7 @@
                 type: 'roleplay',
                 userPersona: 'The moderator trying to keep a conversation going between three very different personalities from across time and space.',
                 isCharacter: false,
-                participantIds: ['byte-gremlin', 'kaelen-ranger-rp', 'ava-student-chat']
+                participantIds: ['byte-gremlin', 'kaelen-ranger-rp', 'olivia-cheerleader-la']
             }
         ];
 
@@ -988,6 +1012,7 @@
                     
                     // After uploading, re-apply settings and attach the cloud listener for future changes.
                     applySettings();
+                    finishLoading(); // Finish loading after first-time sync setup is complete
                     await loadChatHistory(); // This will now listen to Firestore
                 }
             } else {
@@ -1000,30 +1025,42 @@
             if (!currentUser) return;
             const batch = writeBatch(db);
 
-            // Upload settings
+            // 1. Prepare and add encrypted settings to the batch
+            const settingsForFirestore = JSON.parse(JSON.stringify(settings));
+            if (settingsForFirestore.apiKeys && settingsForFirestore.apiKeys[0]) {
+                settingsForFirestore.apiKeys[0].key = await encryptData(settingsForFirestore.apiKeys[0].key);
+            }
+            if (settingsForFirestore.groqApiKey) {
+                settingsForFirestore.groqApiKey = await encryptData(settingsForFirestore.groqApiKey);
+            }
+            if (settingsForFirestore.openRouterApiKey) {
+                settingsForFirestore.openRouterApiKey = await encryptData(settingsForFirestore.openRouterApiKey);
+            }
             const settingsRef = doc(db, `users/${currentUser.uid}/settings`, 'main');
-            batch.set(settingsRef, settings);
+            batch.set(settingsRef, settingsForFirestore);
 
-            // Upload chat metadata (persona is already encrypted in the 'chats' array in memory)
+            // 2. Add encrypted chat metadata to the batch
             for (const chat of chats) {
-                batch.set(doc(db, `users/${currentUser.uid}/chats`, chat.id), chat);
+                const encryptedChat = await encryptChatObject(chat);
+                const chatRef = doc(db, `users/${currentUser.uid}/chats`, chat.id);
+                batch.set(chatRef, { data: encryptedChat.data }); 
             }
 
-            // Upload chat history from local storage
+            // 3. Add chat history from local storage to the batch
             for (let i = 0; i < localStorage.length; i++) {
                 const key = localStorage.key(i);
                 if (key.startsWith(CHAT_HISTORY_KEY_PREFIX)) {
                     const chatId = key.replace(CHAT_HISTORY_KEY_PREFIX, '');
                     const history = JSON.parse(localStorage.getItem(key) || '[]');
-                    for (const message of history) { // 'message' is an already-encrypted turn object
+                    for (const message of history) {
                          const messageRef = doc(collection(db, `users/${currentUser.uid}/chatHistory/${chatId}/messages`));
                          const originalTimestamp = Timestamp.fromDate(new Date(message.isoTimestamp));
-
                          batch.set(messageRef, { ...message, createdAt: originalTimestamp });
                     }
                 }
             }
 
+            // 4. Commit the entire batch atomically
             try {
                 await batch.commit();
                 addSystemMessage('Local data successfully uploaded to the cloud.');
@@ -1151,6 +1188,19 @@
             }
         }
         
+        async function encryptChatObject(chat) {
+            const encryptedData = await encryptData(chat);
+            return { id: chat.id, data: encryptedData };
+        }
+        
+        async function decryptChatObject(doc) {
+            if (doc.data) {
+                const decrypted = await decryptData(doc.data);
+                return decrypted;
+            }
+            return { id: doc.id, ...doc };
+        }
+
         async function encryptTurn(turn) {
             if (turn.parts && turn.parts.length > 0) {
                  const encryptedParts = await Promise.all(turn.parts.map(async (part) => {
@@ -1337,8 +1387,10 @@
             if (!chats.find(c => c.id === settings.activeChatId)) {
                 settings.activeChatId = chats[0]?.id || null;
             }
-            await loadChatHistory();
+            
             applySettings();
+            finishLoading(); // Finish loading after local data is applied
+            await loadChatHistory();
         }
 
         async function loadDataFromFirestore() {
@@ -1348,21 +1400,38 @@
             const settingsSnap = await getDoc(settingsRef);
             settings = settingsSnap.exists() ? { ...getDefaultSettings(), ...settingsSnap.data() } : getDefaultSettings();
             updateLoaderProgress(50);
-
+        
+            // Decrypt API keys after loading from Firestore
+            if (settings.apiKeys && settings.apiKeys[0]) {
+                settings.apiKeys[0].key = await decryptData(settings.apiKeys[0].key);
+            }
+            if (settings.groqApiKey) {
+                settings.groqApiKey = await decryptData(settings.groqApiKey);
+            }
+            if (settings.openRouterApiKey) {
+                settings.openRouterApiKey = await decryptData(settings.openRouterApiKey);
+            }
+        
             const chatsRef = collection(db, `users/${currentUser.uid}/chats`);
             const chatsSnap = await getDocs(chatsRef);
-            chats = chatsSnap.empty ? defaultCharacters : chatsSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+            
+            if (chatsSnap.empty) {
+                chats = defaultCharacters;
+            } else {
+                chats = await Promise.all(chatsSnap.docs.map(d => decryptChatObject({ id: d.id, ...d.data() })));
+            }
             updateLoaderProgress(70);
-
+        
             saveSettingsToLocalStorage();
             saveChatsToLocalStorage();
-
+        
             if (!chats.find(c => c.id === settings.activeChatId)) {
                 settings.activeChatId = chats[0]?.id || null;
             }
-
-            await loadChatHistory();
+        
             applySettings();
+            finishLoading(); // Finish loading after cloud data is applied
+            await loadChatHistory();
         }
         
         // --- Settings Management ---
@@ -1386,10 +1455,24 @@
         function saveSettingsToLocalStorage() {
             localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
         }
-        function saveSettingsToFirestore() {
+
+        async function saveSettingsToFirestore() {
             if (!currentUser) return;
+        
+            const settingsForFirestore = JSON.parse(JSON.stringify(settings));
+        
+            if (settingsForFirestore.apiKeys && settingsForFirestore.apiKeys[0]) {
+                settingsForFirestore.apiKeys[0].key = await encryptData(settingsForFirestore.apiKeys[0].key);
+            }
+            if (settingsForFirestore.groqApiKey) {
+                settingsForFirestore.groqApiKey = await encryptData(settingsForFirestore.groqApiKey);
+            }
+            if (settingsForFirestore.openRouterApiKey) {
+                settingsForFirestore.openRouterApiKey = await encryptData(settingsForFirestore.openRouterApiKey);
+            }
+            
             const settingsRef = doc(db, `users/${currentUser.uid}/settings`, 'main');
-            setDoc(settingsRef, settings, { merge: true }).catch(error => {
+            setDoc(settingsRef, settingsForFirestore, { merge: true }).catch(error => {
                 console.error("Non-blocking Firestore settings save failed:", error);
             });
         }
@@ -1397,12 +1480,23 @@
         function saveChatsToLocalStorage() {
             localStorage.setItem(CHATS_KEY, JSON.stringify(chats));
         }
-        function saveChatToFirestore(chat) {
+
+        async function saveChatToFirestore(chat) {
             if (!currentUser) return;
+            const encryptedChat = await encryptChatObject(chat);
             const chatRef = doc(db, `users/${currentUser.uid}/chats`, chat.id);
-            setDoc(chatRef, chat, { merge: true }).catch(error => {
+            setDoc(chatRef, { data: encryptedChat.data }, { merge: true }).catch(error => {
                 console.error(`Non-blocking Firestore chat save failed for ${chat.id}:`, error);
             });
+        }
+        
+        function formatHeaderName(name) {
+            if (!name) return '';
+            const parts = name.trim().split(' ');
+            if (parts.length > 1 && parts[1]) {
+                return `${parts[0]} ${parts[1].charAt(0)}.`;
+            }
+            return name;
         }
 
         function handleApiProviderChange() {
@@ -1453,8 +1547,7 @@
 
             const activeChat = chats.find(c => c.id === settings.activeChatId);
             if (activeChat) {
-                document.getElementById('header-name').textContent = activeChat.name;
-                const headerAvatarStack = document.getElementById('header-avatar-stack');
+                document.getElementById('header-name').textContent = formatHeaderName(activeChat.name);
                 headerAvatarStack.innerHTML = '';
                 if (activeChat.isCharacter === false && activeChat.participantIds.length > 1) { // Check for group chat
                     activeChat.participantIds.slice(0, 3).forEach(pid => {
@@ -1547,6 +1640,44 @@
             }
         }
 
+        function toggleCharacterPopdown(show) {
+            if (show) {
+                const activeChat = chats.find(c => c.id === settings.activeChatId);
+                if (!activeChat) return;
+
+                popdownName.textContent = activeChat.name;
+
+                if (activeChat.isCharacter === false) { // It's a group
+                    popdownAvatar.src = `https://placehold.co/80x80/${settings.darkMode ? '374151/9ca3af' : 'e5e7eb/4b5563'}?text=Group`;
+                    const participants = activeChat.participantIds.map(id => chats.find(c => c.id === id)).filter(Boolean);
+                    popdownDetailsContent.innerHTML = `
+                        <h4 class="font-semibold mb-2">Participants:</h4>
+                        <div class="flex flex-col gap-1">
+                            ${participants.map(p => `<span>- ${p.name}</span>`).join('')}
+                        </div>
+                    `;
+                } else { // It's a single character
+                    popdownAvatar.src = activeChat.avatar || `https://placehold.co/80x80/${settings.darkMode ? '374151/9ca3af' : 'e5e7eb/4b5563'}?text=${activeChat.name.charAt(0)}`;
+                    // Replace newlines with <br> for proper HTML rendering
+                    const personaHtml = activeChat.persona.replace(/\n/g, '<br>');
+                    popdownDetailsContent.innerHTML = personaHtml;
+                }
+                
+                characterDetailsPopdown.classList.remove('hidden');
+                characterDetailsOverlay.classList.remove('hidden');
+                setTimeout(() => {
+                    characterDetailsPopdown.classList.remove('opacity-0', 'scale-95');
+                }, 10);
+
+            } else {
+                characterDetailsPopdown.classList.add('opacity-0', 'scale-95');
+                setTimeout(() => {
+                    characterDetailsPopdown.classList.add('hidden');
+                    characterDetailsOverlay.classList.add('hidden');
+                }, 200);
+            }
+        }
+
         function renderChats() {
             characterListEl.innerHTML = '';
             chats.forEach(chat => {
@@ -1594,6 +1725,8 @@
         async function loadChat(chatId) {
             if (!chatId) return;
             
+            toggleCharacterPopdown(false);
+            
             settings.activeChatId = chatId;
             saveSettingsToLocalStorage();
             saveSettingsToFirestore();
@@ -1625,7 +1758,7 @@
                 characterModalTitle.textContent = id ? 'Edit Group' : 'Create New Group';
                 groupNameInput.value = chatToEdit ? chatToEdit.name : '';
                 groupTypeSelect.value = chatToEdit ? chatToEdit.type : 'messaging';
-                charUserPersonaInput.value = chatToEdit ? await decryptData(chatToEdit.userPersona) : '';
+                charUserPersonaInput.value = chatToEdit ? chatToEdit.userPersona : '';
                 userPersonaLabel.textContent = 'Your Role in the Group';
                 charUserPersonaInput.placeholder = "Describe your role in the group scenario. e.g., 'The group's leader trying to make a decision.'";
                 populateParticipantList(chatToEdit ? chatToEdit.participantIds : []);
@@ -1635,8 +1768,8 @@
                 charTypeSelect.value = chatToEdit ? chatToEdit.type : 'messaging';
                 charLanguageInput.value = chatToEdit ? chatToEdit.language : 'English';
                 charAvatarPreview.src = chatToEdit ? (chatToEdit.avatar || `https://placehold.co/64x64/${settings.darkMode ? '374151/9ca3af' : 'e5e7eb/4b5563'}?text=${(chatToEdit.name || 'A').charAt(0)}`) : `https://placehold.co/64x64/${settings.darkMode ? '374151/9ca3af' : 'e5e7eb/4b5563'}?text=?`;
-                charPersonaInput.value = chatToEdit ? await decryptData(chatToEdit.persona) : '';
-                charUserPersonaInput.value = chatToEdit ? await decryptData(chatToEdit.userPersona) : '';
+                charPersonaInput.value = chatToEdit ? chatToEdit.persona : '';
+                charUserPersonaInput.value = chatToEdit ? chatToEdit.userPersona : '';
                 updateCharacterModalUI();
             }
 
@@ -1684,13 +1817,11 @@
                     showAlert({ title: 'Input Required', message: 'A group must have at least two characters.' });
                     return;
                 }
-                
-                closeCharacterModal();
 
                 chatToSave = {
                     name,
                     type: groupTypeSelect.value,
-                    userPersona: await encryptData(charUserPersonaInput.value.trim()),
+                    userPersona: charUserPersonaInput.value.trim(),
                     participantIds: selectedParticipants,
                     isCharacter: false,
                     avatar: ''
@@ -1706,51 +1837,72 @@
                     settings.activeChatId = chatToSave.id;
                 }
 
-            } else {
-                 const name = charNameInput.value.trim();
+            } else { // Character mode
+                let name = charNameInput.value.trim();
                 if (!name) {
                     showAlert({ title: 'Input Required', message: 'AI Name cannot be empty.' });
                     return;
                 }
 
-                closeCharacterModal();
-
                 const type = charTypeSelect.value;
                 const persona = charPersonaInput.value.trim();
                 const userPersona = charUserPersonaInput.value.trim();
 
-                chatToSave = {
-                    name,
-                    type,
-                    language: charLanguageInput.value.trim() || 'English',
-                    persona: await encryptData(persona),
-                    userPersona: await encryptData(userPersona),
-                    isCharacter: true,
-                };
-
                 if (editingChatId) {
+                    // --- LOGIC FOR EDITING AN EXISTING CHARACTER ---
                     const chatIndex = chats.findIndex(c => c.id === editingChatId);
-                    chatToSave.id = editingChatId;
-                    chatToSave.participantIds = [editingChatId];
-                    chatToSave.avatar = tempCharAvatarData || chats[chatIndex].avatar;
-                    if (persona !== await decryptData(chats[chatIndex].persona)) {
-                        chatToSave.voice = assignVoice(persona);
+                    chatToSave = {
+                        name,
+                        type,
+                        language: charLanguageInput.value.trim() || 'English',
+                        persona: persona,
+                        userPersona: userPersona,
+                        isCharacter: true,
+                        id: editingChatId,
+                        participantIds: [editingChatId],
+                        avatar: tempCharAvatarData || chats[chatIndex].avatar,
+                    };
+                    if (persona !== chats[chatIndex].persona) {
+                        chatToSave.voice = await assignVoice(persona);
+                    } else {
+                        chatToSave.voice = chats[chatIndex].voice;
                     }
-                    chats[chatIndex] = { ...chats[chatIndex], ...chatToSave };
+                    // This is the fix for the editing bug
+                    chats[chatIndex] = chatToSave;
+
                 } else {
-                    const newId = `char-${Date.now()}`;
-                    chatToSave.id = newId;
-                    chatToSave.participantIds = [newId];
-                    chatToSave.avatar = tempCharAvatarData || '';
-                    chatToSave.voice = assignVoice(persona);
+                    // --- LOGIC FOR CREATING A NEW CHARACTER ---
+                    // New: Handle duplicate names by renaming
+                    const originalName = name;
+                    let counter = 2;
+                    while (chats.some(c => c.name === name)) {
+                        name = `${originalName} ${counter}`;
+                        counter++;
+                    }
+
+                    const newId = `char-${Date.now()}`; // Automatically generate a unique ID
+                    chatToSave = {
+                        name, // Use the potentially renamed name
+                        type,
+                        language: charLanguageInput.value.trim() || 'English',
+                        persona: persona,
+                        userPersona: userPersona,
+                        isCharacter: true,
+                        id: newId,
+                        participantIds: [newId],
+                        avatar: tempCharAvatarData || '',
+                        voice: await assignVoice(persona)
+                    };
                     chats.push(chatToSave);
                     settings.activeChatId = chatToSave.id;
                 }
             }
 
-            renderChats(); // Re-render the sidebar list immediately
+            renderChats();
             saveChatsToLocalStorage();
             saveChatToFirestore(chatToSave);
+            
+            closeCharacterModal();
             
             await loadChat(chatToSave.id || settings.activeChatId);
         }
@@ -1818,7 +1970,6 @@
                 chatHistory.forEach(turn => addMessage(turn));
             }
             scrollToBottom();
-            finishLoading();
         }
 
         async function loadChatHistory() {
@@ -1864,7 +2015,7 @@
                     if (error.code === 'failed-precondition') {
                          addSystemMessage('Error: A database index is required. Please check the developer console for a link to create it.');
                     }
-                    finishLoading();
+                    finishLoading(); // Finish loading even if there's an error
                 });
             } else {
                 const savedHistoryJSON = localStorage.getItem(getChatHistoryKey());
@@ -1910,11 +2061,7 @@
             const decryptedHistory = await Promise.all(chatHistory.map(turn => decryptTurn(turn)));
 
             const dataToDownload = {
-                character: {
-                    ...activeChat,
-                    persona: await decryptData(activeChat.persona),
-                    userPersona: await decryptData(activeChat.userPersona),
-                },
+                character: activeChat,
                 history: decryptedHistory
             };
 
@@ -2004,8 +2151,6 @@
                 ...importedChar,
                 id: existingChar.id,
                 participantIds: [existingChar.id],
-                persona: await encryptData(importedChar.persona),
-                userPersona: await encryptData(importedChar.userPersona),
             };
 
             const charIndex = chats.findIndex(c => c.id === existingChar.id);
@@ -2041,9 +2186,6 @@
              if (newChar.isCharacter) {
                 newChar.participantIds = [newId];
             }
-
-            newChar.persona = await encryptData(newChar.persona);
-            newChar.userPersona = await encryptData(newChar.userPersona);
 
             chats.push(newChar);
             const encryptedHistory = await Promise.all(newHistory.map(encryptTurn));
@@ -2163,10 +2305,19 @@
         
             const bubble = document.createElement('div');
             bubble.classList.add('message-bubble', 'max-w-md', 'lg:max-w-lg', 'rounded-2xl', 'w-fit', 'break-words', 'p-3', 'cursor-pointer');
-            bubble.dataset.text = turn.parts.map(p => p.isImage ? `[Image]` : p.text).join('\n');
+            bubble.dataset.text = turn.parts.filter(p => !p.isPrompt).map(p => p.isImage ? `[Image]` : p.text).join('\n');
         
             turn.parts.forEach(part => {
-                if (part.isImage) {
+                if (part.type === 'image-loading-indicator') {
+                    const loaderContainer = document.createElement('div');
+                    loaderContainer.className = 'flex flex-col items-center justify-center gap-2 text-center';
+                    const loadingImage = `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' width='64' height='64'%3E%3Cdefs%3E%3Cstyle%3E.sun%7Banimation:pulse 2s ease-in-out infinite;transform-origin:center;%7D@keyframes pulse%7B0%25,100%25%7Btransform:scale(1);opacity:.8%7D50%25%7Btransform:scale(1.1);opacity:1%7D%7D%3C/style%3E%3C/defs%3E%3Cpath d='M85,90 H15 C10,90 10,85 15,85 L25,70 L40,80 L60,60 L75,80 L85,75 C90,75 90,80 85,80Z' fill='none' stroke='currentColor' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'/%3E%3Ccircle class='sun' cx='70' cy='30' r='12' fill='currentColor'/%3E%3C/svg%3E`;
+                    loaderContainer.innerHTML = `
+                        <img src="${loadingImage}" class="w-16 h-16 opacity-80" alt="Generating image...">
+                        <span class="text-sm">${part.text}</span>
+                    `;
+                    bubble.appendChild(loaderContainer);
+                } else if (part.isImage) {
                     const imgContainer = document.createElement('div');
                     imgContainer.className = 'w-full';
                     const img = document.createElement('img');
@@ -2174,14 +2325,31 @@
                     img.className = 'rounded-xl max-w-full h-auto block';
                     imgContainer.appendChild(img);
                     bubble.appendChild(imgContainer);
-                } else if (part.text) {
+                } else if (part.isPrompt) {
+                    const promptWrapper = document.createElement('div');
+                    promptWrapper.className = 'mt-2 text-xs';
+                    const showPromptBtn = document.createElement('button');
+                    showPromptBtn.className = 'font-semibold text-blue-500 hover:underline';
+                    showPromptBtn.textContent = 'Show Prompt';
+                    const promptText = document.createElement('div');
+                    promptText.className = 'italic opacity-70 mt-1 hidden';
+                    promptText.textContent = `Prompt: "${part.text}"`;
+                    showPromptBtn.onclick = () => {
+                        const isHidden = promptText.classList.toggle('hidden');
+                        showPromptBtn.textContent = isHidden ? 'Show Prompt' : 'Hide Prompt';
+                    };
+                    promptWrapper.appendChild(showPromptBtn);
+                    promptWrapper.appendChild(promptText);
+                    bubble.appendChild(promptWrapper);
+                }
+                else if (part.text) {
                     const textEl = document.createElement('div');
                     textEl.innerHTML = marked.parse(part.text);
                     bubble.appendChild(textEl);
                 }
             });
 
-            if (turn.parts.length === 1 && turn.parts[0].isImage) {
+            if (turn.parts.some(p => p.isImage)) {
                  bubble.classList.remove('p-3', 'max-w-md', 'lg:max-w-lg');
                  bubble.classList.add('max-w-xs');
             }
@@ -2210,7 +2378,7 @@
                 contentWrapper.appendChild(aiAvatarEl);
                 contentWrapper.appendChild(bubble);
         
-                const hasText = turn.parts.some(p => p.text && !p.isImage);
+                const hasText = turn.parts.some(p => p.text && !p.isImage && !p.type && !p.isPrompt);
                 if (hasText) {
                     const playButton = document.createElement('button');
                     playButton.className = 'play-audio-button p-1 rounded-full hover-theme flex-shrink-0';
@@ -2393,12 +2561,12 @@
 
             let personaInstructionText = '';
             
-            const decryptedPersona = await decryptData(activeChat.persona);
-            const decryptedUserPersona = await decryptData(activeChat.userPersona);
+            const decryptedPersona = activeChat.persona;
+            const decryptedUserPersona = activeChat.userPersona;
 
             if (activeChat.isCharacter === false && activeChat.participantIds.length > 1) { // Group Chat
                 const participants = activeChat.participantIds.map(id => chats.find(c => c.id === id)).filter(Boolean);
-                let participantPrompts = (await Promise.all(participants.map(async p => `- ${p.name}: ${await decryptData(p.persona)}`))).join('\n');
+                let participantPrompts = (await Promise.all(participants.map(async p => `- ${p.name}: ${p.persona}`))).join('\n');
                 
                 personaInstructionText = `You are a chat moderator for a group conversation. Your job is to generate responses for the AI characters in the group. The participants are:\n${participantPrompts}\n`;
                 if (decryptedUserPersona) {
@@ -2451,7 +2619,7 @@
             }
 
             const historyForApi = currentChatHistory
-                .filter(turn => turn.role !== 'System')
+                .filter(turn => turn.role !== 'System' && turn.parts.every(p => p.type !== 'image-loading-indicator'))
                 .map(turn => {
                     const apiParts = turn.parts.map(part => {
                         if (part.isImage) {
@@ -2493,6 +2661,37 @@
             }
         }
         
+        function showTypingIndicator(activeChat) {
+            const typingAvatarContainer = document.getElementById('typing-avatar-container');
+            if (!activeChat || !typingAvatarContainer) return;
+        
+            typingAvatarContainer.innerHTML = ''; // Clear previous avatars
+        
+            if (activeChat.isCharacter === false && activeChat.participantIds.length > 1) {
+                // Group chat: show an avatar stack
+                const stackEl = document.createElement('div');
+                stackEl.className = 'flex items-center -space-x-3';
+                activeChat.participantIds.slice(0, 2).forEach(pid => {
+                    const participant = chats.find(c => c.id === pid);
+                    if (participant) {
+                        const img = document.createElement('img');
+                        img.src = participant.avatar || `https://placehold.co/48x48/${settings.darkMode ? '374151/9ca3af' : 'e5e7eb/4b5563'}?text=${participant.name.charAt(0)}`;
+                        img.className = 'w-8 h-8 rounded-full object-cover border-2 border-white dark:border-gray-800';
+                        stackEl.appendChild(img);
+                    }
+                });
+                typingAvatarContainer.appendChild(stackEl);
+            } else {
+                // One-on-one chat: show a single avatar
+                const img = document.createElement('img');
+                img.src = activeChat.avatar || `https://placehold.co/48x48/${settings.darkMode ? '374151/9ca3af' : 'e5e7eb/4b5563'}?text=${(activeChat.name || 'A').charAt(0)}`;
+                img.className = 'w-8 h-8 rounded-full object-cover';
+                typingAvatarContainer.appendChild(img);
+            }
+        
+            typingIndicatorContainer.classList.remove('hidden');
+        }
+
         async function getAiResponse(userMessage, imageBase64 = null, guidance = null) {
             const apiProvider = settings.apiProvider;
             let keyMissing = false;
@@ -2522,20 +2721,15 @@
                 imageKeywords.some(kw => lowerUserMessage.includes(kw));
 
             if (isImageRequest) {
-                await handleImageGeneration(userMessage);
-                return;
+                const imageGenerated = await handleImageGeneration(userMessage);
+                if (imageGenerated) return; 
             }
             
             const payload = await buildApiPayload(chatHistory, userMessage, guidance);
             if (!payload) return;
-
+            
             const activeChat = chats.find(c => c.id === settings.activeChatId);
-            const typingAvatar = document.getElementById('typing-avatar');
-            if (activeChat) {
-                const defaultAvatarUrl = `https://placehold.co/40x40/${settings.darkMode ? '374151/9ca3af' : 'e5e7eb/4b5563'}?text=${(activeChat.name || 'A').charAt(0)}`;
-                typingAvatar.src = activeChat.avatar || defaultAvatarUrl;
-            }
-            typingIndicatorContainer.classList.remove('hidden');
+            showTypingIndicator(activeChat);
             
             try {
                 let aiText;
@@ -2568,75 +2762,94 @@
                     addSystemMessage(`My response was empty. Reason: ${reason}.`);
                 }
             } catch (error) {
-                showAlert({ title: "API Error", message: error.message });
+                addSystemMessage(`API Error: ${error.message}`);
             } finally {
                 typingIndicatorContainer.classList.add('hidden');
             }
         }
         
-        async function handleImageGeneration(userMessage) {
+        async function handleImageGeneration(userMessage, directPrompt = null) {
             if (!settings.apiKeys[0]?.key) {
-                await showAlert({ title: 'API Key Missing', message: 'A <strong>Gemini</strong> API key is required to generate images.' });
-                return;
+                showAlert({ title: 'API Key Missing', message: 'A <strong>Gemini</strong> API key is required to generate images.' });
+                return false;
             }
-
-            addSystemMessage('Creating image... This might take a moment...');
-            typingIndicatorContainer.classList.remove('hidden');
-
+        
+            const loaderId = `image-loader-${Date.now()}`;
+            const loaderTurn = {
+                role: 'System',
+                parts: [{ type: 'image-loading-indicator', text: 'Creating image...' }],
+                isoTimestamp: loaderId
+            };
+            addMessage(loaderTurn);
+            
             try {
-                const recentHistory = chatHistory.slice(-10).map(turn => `${turn.role}: ${turn.parts.map(p => p.text).join(' ')}`).join('\n');
-                const activeChat = chats.find(c => c.id === settings.activeChatId);
-
-                const promptForDescription = `
+                let imagePrompt;
+                if (directPrompt) {
+                    imagePrompt = directPrompt;
+                } else {
+                    const recentHistory = chatHistory.slice(-10).map(turn => `${turn.role}: ${turn.parts.map(p => p.text).join(' ')}`).join('\n');
+                    const activeChat = chats.find(c => c.id === settings.activeChatId);
+                    const promptForDescription = `
 You are a prompt engineer for an image generation model. The final image should be a realistic photo taken with a 35mm lens.
 **Character Persona:**
-${await decryptData(activeChat.persona)}
+${activeChat.persona}
 **Recent Conversation:**
 ${recentHistory}
 **User's Request:**
 "${userMessage}"
 Based on all this information, create a single, descriptive prompt for an image generation model.`;
-                
-                const descriptionPayload = { contents: [{ parts: [{ text: promptForDescription }] }] };
-                const descriptionResult = await callGeminiAPI(descriptionPayload);
-                const imagePrompt = descriptionResult.candidates[0].content.parts[0].text.trim();
+                    
+                    const descriptionPayload = { contents: [{ parts: [{ text: promptForDescription }] }] };
+                    const descriptionResult = await callGeminiAPI(descriptionPayload);
+                    imagePrompt = descriptionResult.candidates[0].content.parts[0].text.trim();
+                }
                 
                 const imagePayload = {
                     contents: [{ parts: [{ text: imagePrompt }] }],
                     generationConfig: { responseModalities: ['TEXT', 'IMAGE'] }
                 };
                 
-                const imageResult = await callGeminiAPI(imagePayload, 'gemini-1.5-flash'); // Use a capable model
+                const imageResult = await callGeminiAPI(imagePayload, 'gemini-2.0-flash-preview-image-generation');
                 const imagePart = imageResult.candidates?.[0]?.content?.parts?.find(p => p.inlineData);
-
+        
                 if (imagePart) {
                     const base64Data = imagePart.inlineData.data;
                     const mimeType = imagePart.inlineData.mimeType;
                     const imageUrl = `data:${mimeType};base64,${base64Data}`;
-                    const imageTurn = { role: 'model', parts: [{ text: imageUrl, isImage: true }], isoTimestamp: new Date().toISOString() };
-                    chatHistory.push(imageTurn);
-
+                    
+                    const imageTurnParts = [{ text: imageUrl, isImage: true }];
+                    if (!directPrompt) {
+                        imageTurnParts.push({ text: imagePrompt, isPrompt: true });
+                    }
+                    
+                    const imageTurn = { role: 'model', parts: imageTurnParts, isoTimestamp: new Date().toISOString() };
+                    
                     if (!currentUser) {
-                        addMessage(imageTurn);
+                        chatHistory.push(imageTurn);
                         saveMessageLocally(imageTurn);
                     } else {
                         const encryptedTurn = await encryptTurn(imageTurn);
                         const messagesRef = collection(db, `users/${currentUser.uid}/chatHistory/${settings.activeChatId}/messages`);
                         await addDoc(messagesRef, { ...encryptedTurn, createdAt: serverTimestamp() });
                     }
+
+                    document.querySelector(`[data-id="${loaderId}"]`)?.remove();
+                    addMessage(imageTurn);
+                    return true;
+
                 } else {
                     const textPart = imageResult.candidates?.[0]?.content?.parts?.[0]?.text;
                     if (textPart) {
-                        throw new Error(`Image generation failed. The model responded with: "${textPart}"`);
+                        throw new Error(`The model responded with text instead of an image: "${textPart}"`);
                     } else {
-                        throw new Error("Image generation failed or returned no image data.");
+                        throw new Error("Image generation failed or returned no image data. This could be due to safety filters.");
                     }
                 }
-
+        
             } catch (error) {
-                showAlert({ title: "Image Generation Error", message: error.message });
-            } finally {
-                typingIndicatorContainer.classList.add('hidden');
+                document.querySelector(`[data-id="${loaderId}"]`)?.remove();
+                addSystemMessage(`Image generation failed: ${error.message}`);
+                return false;
             }
         }
 
@@ -2718,18 +2931,14 @@ Language: "${language}"
 **Your Task:**
 Generate the following character profile. Each field must be on a new line, formatted as "Key: Value".
         
-Full Name: (Generate a culturally appropriate full name based on the details. If no ethnicity is provided, make a reasonable, common guess.)
+Full Name: (CRITICAL: Use the user's "Name Idea" as the first name. If the user provided only a first name, generate a fitting surname to append. If the user provided a full name, use it directly without changes.)
 Age: (Generate a realistic age.)
 Role: (e.g., Girlfriend, Best Friend, Rival, Mentor. Keep it short and relevant to the user.)
 Profession:
 Location: (e.g., a city and country)
 Characteristics: (A short paragraph describing their core personality, temperament, likes, and dislikes.)
 Texting Style: (A very short, direct description of their texting habits. e.g., "Uses a lot of emojis and slang," or "Formal, with perfect grammar and no abbreviations.")
-        
-Image Generation Prompt: You MUST create a highly detailed, structured prompt designed for CONSISTENT character generation in a photorealistic style (35mm photo). Include specific, immutable features.
-- Core Appearance: (Detailed description of unchangeable features: ethnicity, face shape, eye color, nose shape, lip shape, hair color and style, body type, height, unique marks like freckles or scars.)
-- Default Clothing Style: (Describe their typical clothing style, e.g., 'bohemian chic with flowing skirts and layered necklaces' or 'minimalist business casual with neutral tones'.)
-        
+         
 **IMPORTANT RULE:** Your entire response MUST ONLY contain the profile fields listed above. Do not add any greetings, explanations, or extra text.`;
             }
         
@@ -2799,7 +3008,8 @@ Image Generation Prompt: You MUST create a highly detailed, structured prompt de
                         charNameInput.value = suggestedName;
                     }
 
-                    await generateImagePromptFromPersona(); 
+                    // The user wants to remove this automatic call when analyzing the image.
+                    // await generateImagePromptFromPersona(); 
                 } else {
                     throw new Error("Failed to get a valid response from the AI.");
                 }
@@ -2990,6 +3200,9 @@ Image Generation Prompt: You MUST create a highly detailed, structured prompt de
         settingsOverlay.addEventListener('click', () => toggleSettingsPanel(false));
         sidebarOverlay.addEventListener('click', () => toggleSidebar(false));
 
+        headerAvatarStack.addEventListener('click', () => toggleCharacterPopdown(true));
+        characterDetailsOverlay.addEventListener('click', () => toggleCharacterPopdown(false));
+
         resetAppButton.addEventListener('click', async () => {
             const confirmed = await showConfirm({ 
                 title: "Confirm Data Deletion",
@@ -3125,7 +3338,7 @@ Image Generation Prompt: You MUST create a highly detailed, structured prompt de
             guidanceInput.value = '';
             guidanceWrapper.classList.add('hidden');
             messageInput.dispatchEvent(new Event('input'));
-
+            
             const now = new Date();
             const isoTimestamp = now.toISOString();
 
@@ -3142,9 +3355,8 @@ Image Generation Prompt: You MUST create a highly detailed, structured prompt de
             const base64ForApi = attachedImage ? attachedImage.split(',')[1] : null;
             removeImageButton.click(); 
 
-            // Update the state first.
+            // Add message to UI and local history immediately for responsiveness
             chatHistory.push(userTurnForHistory); 
-            // Update UI optimistically
             addMessage(userTurnForHistory); 
 
             if (!currentUser) {
@@ -3156,13 +3368,31 @@ Image Generation Prompt: You MUST create a highly detailed, structured prompt de
                     await addDoc(messagesRef, { ...encryptedTurn, createdAt: serverTimestamp() });
                 } catch (error) {
                     showAlert({ title: "Send Failed", message: "Failed to send your message. Please try again." });
-                    // If send fails, remove the optimistic update
                     chatHistory.pop();
                     renderChatHistory();
                     return;
                 }
             }
-            // Now that the history is updated, call the AI.
+            
+            if (userMessage.startsWith('/image ')) {
+                const directPrompt = userMessage.substring('/image '.length).trim();
+                if (directPrompt) {
+                    await handleImageGeneration(null, directPrompt);
+                } else {
+                    addSystemMessage("Please provide a prompt after `/image`.");
+                }
+                return; 
+            }
+
+            if (userMessage.startsWith('/sendpic')) {
+                let contextualRequest = userMessage.substring('/sendpic'.length).trim();
+                if (!contextualRequest) {
+                    contextualRequest = 'a selfie of you';
+                }
+                await handleImageGeneration(contextualRequest);
+                return;
+            }
+
             await getAiResponse(userMessage || "What is in this image?", base64ForApi, guidanceText);
         });
 
