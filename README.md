@@ -5,7 +5,7 @@
   <img src="screenshots/ss Instagram mobile.png" alt="Instagram Mobile" width="45%">
 </p>
 <p align="center">
-  <img src="screenshots/ss whatsapp desktop.jpg" alt="WhatsApp Desktop" width="45%">
+  <img src="screenshots/ss whatsapp desktop.jpeg" alt="WhatsApp Desktop" width="45%">
   <img src="screenshots/ss whatsapp mobile.png" alt="WhatsApp Mobile" width="45%">
 </p>
 
