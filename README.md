@@ -1,14 +1,14 @@
 # Gemna Chat
 
 <p align="center">
-  <img src="screenshots/ss instagram desktop.jpeg" alt="Instagram Desktop" width="48%">
-  <img src="screenshots/ss whatsapp desktop.jpeg" alt="WhatsApp Desktop" width="48%">
+  <img src="screenshots/ss instagram desktop.jpeg" alt="Instagram Desktop" width="48%" style="border:1px solid #ccc; border-radius:8px; padding:4px; background:#fff;">
+  <img src="screenshots/ss whatsapp desktop.jpeg" alt="WhatsApp Desktop" width="48%" style="border:1px solid #ccc; border-radius:8px; padding:4px; background:#fff;">
 </p>
 
 <p align="center">
-  <img src="screenshots/ss instagram mobile.png" alt="Instagram Mobile" width="30%">
-  <img src="screenshots/ss whatsapp mobile.png" alt="WhatsApp Mobile" width="30%">
-  <img src="screenshots/ss settings.png" alt="Settings" width="30%">
+  <img src="screenshots/ss instagram mobile.png" alt="Instagram Mobile" width="30%" style="border:1px solid #ccc; border-radius:8px; padding:4px; background:#fff;">
+  <img src="screenshots/ss whatsapp mobile.png" alt="WhatsApp Mobile" width="30%" style="border:1px solid #ccc; border-radius:8px; padding:4px; background:#fff;">
+  <img src="screenshots/ss settings.png" alt="Settings" width="30%" style="border:1px solid #ccc; border-radius:8px; padding:4px; background:#fff;">
 </p>
 
 ### A Customizable, Zero-Framework AI Chat Experience
