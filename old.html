@@ -2030,19 +2030,13 @@
 
         async function clearCurrentChatHistory() {
             const confirmed = await showConfirm({ message: 'Are you sure you want to clear this chat? This will erase the conversation from your device and the cloud.' });
-            if (confirmed) {
-                // Always remove the local storage backup, regardless of sign-in state.
+            if(confirmed){
+                chatHistory = [];
                 localStorage.removeItem(getChatHistoryKey());
-        
+
                 if (currentUser && settings.activeChatId) {
-                    // For signed-in users, just delete the cloud data.
-                    // The onSnapshot listener is responsible for updating the UI.
-                    // We MUST NOT set chatHistory = [] here.
                     await clearCloudChatHistory(settings.activeChatId);
                 } else {
-                    // For signed-out users, there is no listener, so we must
-                    // manually clear the state and re-render the UI.
-                    chatHistory = [];
                     renderChatHistory();
                 }
             }
