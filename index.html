@@ -199,7 +199,7 @@
         #app-container.loaded {
             opacity: 1;
         }
-        
+
         /* FIX: Popdown positioning change */
         #character-details-popdown {
             position: absolute;
@@ -214,7 +214,7 @@
                 right: 1rem;
             }
         }
-        
+
         #character-details-overlay {
              position: absolute;
         }
@@ -708,13 +708,13 @@
         const firebaseConfig = typeof __firebase_config !== 'undefined'
             ? JSON.parse(__firebase_config)
             : {
-                apiKey: "AIzaSyBgSwBpREtdb2Hvf-ByloRMAt1bEdC2_Hs",
-                authDomain: "chatterappvx.firebaseapp.com",
-                projectId: "chatterappvx",
-                storageBucket: "chatterappvx.firebasestorage.app",
-                messagingSenderId: "613019810209",
-                appId: "1:613019810209:web:f08ab37264cddb7c32b3e0",
-                measurementId: "G-VB121YTR92"
+                apiKey: "AIzaSyACbU-iyEvELauVU9qvVA8-mJHYJDcToIU",
+                authDomain: "gemnachatapp.firebaseapp.com",
+                projectId: "gemnachatapp",
+                storageBucket: "gemnachatapp.firebasestorage.app",
+                messagingSenderId: "212268165606",
+                appId: "1:212268165606:web:0823e27435ea59662dce27",
+                measurementId: "G-235KDX8398"
             };
 
         // Import Firebase modules
@@ -899,6 +899,7 @@
         let modalMode = 'character';
         let tempCharAvatarData = null;
         let chatListenerUnsubscribe = null;
+        let chatsListenerUnsubscribe = null; // <-- FIX: New variable for the chats collection listener
         let activeAvatarContext = null;
         let authMode = 'signin'; // 'signin' or 'signup'
 
@@ -1017,9 +1018,14 @@
             updateLoaderProgress(30);
             updateAccountUI(user);
 
+            // <-- FIX: Detach all listeners before proceeding
             if (chatListenerUnsubscribe) {
                 chatListenerUnsubscribe();
                 chatListenerUnsubscribe = null;
+            }
+            if (chatsListenerUnsubscribe) {
+                chatsListenerUnsubscribe();
+                chatsListenerUnsubscribe = null;
             }
 
             if (user) {
@@ -1043,11 +1049,45 @@
                     finishLoading(); // Finish loading after first-time sync setup is complete
                     await loadChatHistory(); // This will now listen to Firestore
                 }
+                // <-- FIX: Attach the new real-time listener for the character list
+                listenForChatChanges();
             } else {
                 // NO USER: The user signed out or was never logged in. Load from local storage.
                 await loadDataFromLocalStorage();
             }
         });
+
+        // <-- FIX: New function to listen for real-time changes to the chat list
+        function listenForChatChanges() {
+            if (!currentUser) return;
+
+            const chatsRef = collection(db, `users/${currentUser.uid}/chats`);
+            chatsListenerUnsubscribe = onSnapshot(chatsRef, async (querySnapshot) => {
+                console.log("Chat list updated from Firestore.");
+                const newChats = await Promise.all(querySnapshot.docs.map(d => decryptChatObject({ id: d.id, ...d.data() })));
+
+                chats = newChats.length > 0 ? newChats : defaultCharacters;
+                saveChatsToLocalStorage();
+                renderChats();
+
+                // Edge case: If the currently active chat was deleted on another device
+                if (!chats.find(c => c.id === settings.activeChatId)) {
+                    console.log("Active chat was deleted elsewhere. Switching to a new chat.");
+                    const newActiveChatId = chats[0]?.id || null;
+                    if (settings.activeChatId !== newActiveChatId) {
+                       await loadChat(newActiveChatId);
+                    }
+                } else {
+                    // Just update the header in case the name/avatar changed
+                    applySettings();
+                }
+
+            }, (error) => {
+                console.error("Error listening to chat list:", error);
+                addSystemMessage("Error: Could not sync character list in real-time.");
+            });
+        }
+
 
         async function uploadLocalDataToFirestore() {
             if (!currentUser) return;
@@ -1452,20 +1492,15 @@
             if (settings.openRouterApiKey) {
                 settings.openRouterApiKey = await decryptData(settings.openRouterApiKey);
             }
-        
-            const chatsRef = collection(db, `users/${currentUser.uid}/chats`);
-            const chatsSnap = await getDocs(chatsRef);
             
-            if (chatsSnap.empty) {
-                chats = defaultCharacters;
-            } else {
-                chats = await Promise.all(chatsSnap.docs.map(d => decryptChatObject({ id: d.id, ...d.data() })));
-            }
-            updateLoaderProgress(70);
-        
+            // <-- FIX: The initial loading of chats is now handled by listenForChatChanges()
+            // The old getDocs call is no longer needed here.
+
             saveSettingsToLocalStorage();
-            saveChatsToLocalStorage();
+            // saveChatsToLocalStorage() is now handled by the listener
         
+            // The listener will render the chats, but we need to ensure an active chat is selected.
+            // This check will be re-run inside the listener.
             if (!chats.find(c => c.id === settings.activeChatId)) {
                 settings.activeChatId = chats[0]?.id || null;
             }
@@ -1940,7 +1975,9 @@
                     settings.activeChatId = chatToSave.id;
                 }
             }
-
+            
+            // The local render provides immediate feedback.
+            // Firestore save will trigger the onSnapshot listener on other devices.
             renderChats();
             saveChatsToLocalStorage();
             saveChatToFirestore(chatToSave);
@@ -1959,18 +1996,23 @@
             const confirmed = await showConfirm({ message: `Are you sure you want to delete this chat? This action cannot be undone.` });
             if (confirmed) {
                 const deletedChatId = editingChatId;
-                chats = chats.filter(c => c.id !== deletedChatId);
-                settings.activeChatId = chats[0].id;
 
-                localStorage.removeItem(getChatHistoryKey(deletedChatId));
-                saveChatsToLocalStorage();
-                saveSettingsToLocalStorage();
-
+                // Deleting from Firestore will trigger the onSnapshot listener, which will update
+                // the `chats` array and re-render on all clients automatically.
                 if (currentUser) {
                     await deleteDoc(doc(db, `users/${currentUser.uid}/chats`, deletedChatId));
                     await clearCloudChatHistory(deletedChatId);
-                    await saveSettingsToFirestore();
                 }
+
+                // For local-only (anonymous) users, we must do this manually.
+                chats = chats.filter(c => c.id !== deletedChatId);
+                localStorage.removeItem(getChatHistoryKey(deletedChatId));
+                saveChatsToLocalStorage();
+
+                // Select a new chat
+                settings.activeChatId = chats[0].id;
+                saveSettingsToLocalStorage();
+                if (currentUser) await saveSettingsToFirestore();
 
                 await loadChat(settings.activeChatId);
                 closeCharacterModal();
